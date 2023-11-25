@@ -10,18 +10,20 @@ export class BitReader {
     #view
 
     /**
+     * bit position, not byte position
      * @type {number}
      */
     #pos
 
     /**
+     * If true then read last bits as low part of number, if false pad with zero bits (only applies when trying to read more bits than there are left )
      * @type {boolean}
      */
     #truncate
 
     /**
      * @param {number[] | Uint8Array} bytes
-     * @param {boolean} truncate if true then read last bits as low part of number, if false pad with zero bits (only applies when trying to read more bits than there are left )
+     * @param {boolean} truncate determines behavior when reading too many bits
      */
     constructor(bytes, truncate = true) {
         if (bytes instanceof Uint8Array) {
@@ -30,7 +32,7 @@ export class BitReader {
             this.#view = new Uint8Array(bytes)
         }
 
-        this.#pos = 0 // bit position, not byte position
+        this.#pos = 0
         this.#truncate = truncate
     }
 
