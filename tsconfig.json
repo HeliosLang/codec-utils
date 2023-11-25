@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "checkJs": true,
+        "declaration": true,
+        "declarationMap": true,
+        "emitDeclarationOnly": true,
+        "skipLibCheck": true,
+        "strictNullChecks": true,
+        "target": "es2020"
+    },
+    "exclude": ["node_modules"]
+}
