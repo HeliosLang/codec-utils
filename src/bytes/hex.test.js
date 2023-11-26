@@ -1,7 +1,7 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
-import { bytesToHex, hexToBytes } from "./index.js"
+import { bytesToHex, hexToBytes } from "./hex.js"
 
 describe("converting bytes to hex and back", () => {
     it("should convert [0,255,52] to hex 00ff34", () => {
