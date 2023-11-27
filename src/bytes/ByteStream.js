@@ -26,7 +26,7 @@ export class ByteStream {
      * @param {number[] | Uint8Array | ByteStream} bytes
      * @returns {ByteStream}
      */
-    static fromBytes(bytes) {
+    static from(bytes) {
         if (bytes instanceof ByteStream) {
             return bytes
         } else {
@@ -55,8 +55,8 @@ export class ByteStream {
      * @returns {number[]}
      */
     peekMany(n) {
-        if (n < 1) {
-            throw new Error("n must be >= 1")
+        if (n < 0) {
+            throw new Error("unexpected negative n")
         }
 
         if (this.#pos + n <= this.#bytes.length) {
@@ -84,8 +84,8 @@ export class ByteStream {
      * @returns {number[]}
      */
     shiftMany(n) {
-        if (n < 1) {
-            throw new Error("n must be >= 1")
+        if (n < 0) {
+            throw new Error("unexpected negative n")
         }
 
         if (this.#pos + n <= this.#bytes.length) {

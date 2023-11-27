@@ -3,84 +3,95 @@ import { describe, it } from "node:test"
 import { BitWriter } from "./BitWriter.js"
 import { deepEqual, strictEqual, throws } from "node:assert"
 
-describe("using BitWriter", () => {
-    it("should fail when writing non zero/one", () => {
-        throws(() => {
+describe(BitWriter.name, () => {
+    describe("initialized without writing any bits", () => {
+        it("finalizes as []", () => {
             const bw = new BitWriter()
-            bw.writeBits("2")
+            deepEqual(bw.finalize(false), [])
+        })
+
+        it("finalizes as [] after writing an empty bit-string", () => {
+            const bw = new BitWriter()
+            deepEqual(bw.writeBits("").finalize(false), [])
+        })
+
+        it('fails when writing a bit-string not consisting of only "0"s and "1"s', () => {
+            throws(() => {
+                const bw = new BitWriter()
+                bw.writeBits("2")
+            })
+        })
+
+        it("fails when writing -1 as a byte", () => {
+            const bw = new BitWriter()
+            throws(() => bw.writeByte(-1))
+        })
+
+        it("fails when writing 256 as a byte", () => {
+            const bw = new BitWriter()
+            throws(() => bw.writeByte(256))
         })
     })
 
-    it("should finalize a new BitWriter as []", () => {
-        const bw = new BitWriter()
-        deepEqual(bw.finalize(false), [])
+    describe('initialized by writing "0", "" (empty string), and then "1"', () => {
+        it("finalizes as [0b01000001]", () => {
+            const bw = new BitWriter()
+            deepEqual(bw.writeBits("0").writeBits("1").finalize(false), [
+                0b01000001
+            ])
+        })
+
+        it("finalizes as [] after popping 2 bits", () => {
+            const bw = new BitWriter()
+            bw.writeBits("0").writeBits("").writeBits("1").pop(2)
+            deepEqual(bw.finalize(false), [])
+        })
+
+        it("fails when popping 3 bits", () => {
+            const bw = new BitWriter()
+            throws(() => bw.writeBits("0").writeBits("").writeBits("1").pop(3))
+        })
+
+        it("finalizes as a bit-string with length divisible by 8", () => {
+            const bw = new BitWriter()
+            bw.writeBits("0").writeBits("1").finalize(false)
+            strictEqual(bw.length % 8, 0)
+        })
     })
 
-    it('should finalize ["0", "1"] as [0b01000001]', () => {
-        const bw = new BitWriter()
-        deepEqual(bw.writeBits("0").writeBits("1").finalize(false), [
-            0b01000001
-        ])
-    })
+    describe("initialized by writing 7 as a single byte", () => {
+        it("finalizes as [7]", () => {
+            const bw = new BitWriter()
+            deepEqual(bw.writeByte(7).finalize(false), [7])
+        })
 
-    it('should finalize ["0", "1"] as [] if pop(2) is called before finalize', () => {
-        const bw = new BitWriter()
-        bw.writeBits("0").writeBits("1").pop(2)
-        deepEqual(bw.finalize(false), [])
-    })
+        it("finalizes as [7, 1] if force is set to true", () => {
+            const bw = new BitWriter()
+            deepEqual(bw.writeByte(7).finalize(true), [7, 1])
+        })
 
-    it('should finalize ["0", "", "1"] as [] if pop(2) is called before finalize', () => {
-        const bw = new BitWriter()
-        bw.writeBits("0").writeBits("").writeBits("1").pop(2)
-        deepEqual(bw.finalize(false), [])
-    })
+        it('returns "111" when popping 3 bits', () => {
+            const bw = new BitWriter()
+            bw.writeByte(7)
+            strictEqual(bw.pop(3), "111")
+        })
 
-    it("should fail when trying to pop more than has been written", () => {
-        const bw = new BitWriter()
-        throws(() => bw.writeBits("0").writeBits("1").pop(3))
-    })
+        it("fails when popping a negative number of bits", () => {
+            const bw = new BitWriter()
+            bw.writeByte(7)
+            throws(() => bw.pop(-1))
+        })
 
-    it("should finalize as a bit string with length divisible by 8", () => {
-        const bw = new BitWriter()
-        bw.writeBits("0").writeBits("1").finalize(false)
-        strictEqual(bw.length % 8, 0)
-    })
+        it("returns an empty string when when popping 0 bits", () => {
+            const bw = new BitWriter()
+            bw.writeByte(7)
+            strictEqual(bw.pop(0), "")
+        })
 
-    it("should write byte 7 as [7]", () => {
-        const bw = new BitWriter()
-        deepEqual(bw.writeByte(7).finalize(false), [7])
-    })
-
-    it("should write byte 7 as [7, 1] if force==true", () => {
-        const bw = new BitWriter()
-        deepEqual(bw.writeByte(7).finalize(true), [7, 1])
-    })
-
-    it('should return "111" if pop(3) is called after writing byte 7', () => {
-        const bw = new BitWriter()
-        bw.writeByte(7)
-        strictEqual(bw.pop(3), "111")
-    })
-
-    it("should fail when calling pop() with a negative argument", () => {
-        const bw = new BitWriter()
-        bw.writeByte(7)
-        throws(() => bw.pop(-1))
-    })
-
-    it("should write byte 7 as [1] if pop(3) is called before finalize", () => {
-        const bw = new BitWriter()
-        bw.writeByte(7).pop(3)
-        deepEqual(bw.finalize(false), [1])
-    })
-
-    it("should fail when writing byte -1", () => {
-        const bw = new BitWriter()
-        throws(() => bw.writeByte(-1))
-    })
-
-    it("should fail when writing byte 256", () => {
-        const bw = new BitWriter()
-        throws(() => bw.writeByte(256))
+        it("after popping 3 bits, finalizes as [1]", () => {
+            const bw = new BitWriter()
+            bw.writeByte(7).pop(3)
+            deepEqual(bw.finalize(false), [1])
+        })
     })
 })

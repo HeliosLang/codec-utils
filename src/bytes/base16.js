@@ -1,4 +1,17 @@
-import { padBits } from "../bits/ops.js"
+import { padBits } from "../bits/index.js"
+
+/**
+ * Checks if all characters of a string are in the base16 charset, and if the length of the string is even.
+ * @param {string} s
+ * @returns {boolean}
+ */
+export function isValidHex(s) {
+    if (s.length % 2 == 0) {
+        return s.match(/^[0-9a-fA-F]*$/) != null
+    } else {
+        return false
+    }
+}
 
 /**
  * Converts a hexadecimal string into a list of bytes.

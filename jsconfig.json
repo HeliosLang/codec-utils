@@ -1,13 +1,14 @@
 {
     "compilerOptions": {
-        "allowJs": true,
         "checkJs": true,
         "declaration": true,
         "declarationMap": true,
-        "emitDeclarationOnly": true,
         "skipLibCheck": true,
         "strictNullChecks": true,
-        "target": "es2020"
+        "moduleResolution": "nodenext",
+        "module": "nodenext",
+        "target": "esnext"
     },
-    "exclude": ["node_modules"]
+    "exclude": ["node_modules", "**/*.d.ts"],
+    "include": ["src/**/*.js"]
 }

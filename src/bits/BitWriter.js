@@ -56,6 +56,10 @@ export class BitWriter {
      * @returns {BitWriter}
      */
     writeByte(byte) {
+        if (byte < 0 || byte > 255) {
+            throw new Error("invalid byte")
+        }
+
         this.writeBits(padBits(byte.toString(2), 8))
 
         return this

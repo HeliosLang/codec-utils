@@ -3,98 +3,126 @@ import { describe, it } from "node:test"
 
 import { ByteStream } from "./ByteStream.js"
 
-describe("using ByteStream", () => {
-    it("should peekOne of [255] as 255", () => {
-        const bs = new ByteStream([255])
+const from = ByteStream.from
+const isAtEnd = ByteStream.prototype.isAtEnd
+const peekOne = ByteStream.prototype.peekOne
+const shiftOne = ByteStream.prototype.shiftOne
+const shiftMany = ByteStream.prototype.shiftMany
+const peekMany = ByteStream.prototype.peekMany
 
-        strictEqual(bs.peekOne(), 255)
+describe(ByteStream.name, () => {
+    describe("initialized with [255]", () => {
+        it("returns 255 when peeking a single byte", () => {
+            const bs = new ByteStream([255])
+
+            strictEqual(bs.peekOne(), 255)
+        })
+
+        it(`returns 255 when shifting a single byte`, () => {
+            const bs = new ByteStream([255])
+
+            strictEqual(bs.shiftOne(), 255)
+        })
+
+        it(`after shifting a single byte, stream is at end`, () => {
+            const bs = new ByteStream([255])
+            bs.shiftOne()
+
+            strictEqual(bs.isAtEnd(), true)
+        })
+
+        it("fails after shifting two bytes", () => {
+            const bs = new ByteStream([255])
+            bs.shiftOne()
+
+            throws(() => bs.shiftOne())
+        })
+
+        it("after shifting a single byte, fails when peeking", () => {
+            const bs = new ByteStream([255])
+            bs.shiftOne()
+
+            throws(() => bs.peekOne())
+        })
+
+        it(`returns [255] when calling ${shiftMany.name}(1)`, () => {
+            const bs = new ByteStream([255])
+
+            deepEqual(bs.shiftMany(1), [255])
+        })
+
+        it(`returns [] when calling ${shiftMany.name}(0)`, () => {
+            const bs = new ByteStream([255])
+
+            deepEqual(bs.shiftMany(0), [])
+        })
+
+        it(`fails when calling ${shiftMany.name}(-1)`, () => {
+            const bs = new ByteStream([255])
+
+            throws(() => bs.shiftMany(-1))
+        })
+
+        it(`fails when calling ${shiftMany.name}(2)`, () => {
+            const bs = new ByteStream([255])
+
+            throws(() => bs.shiftMany(2))
+        })
+
+        it(`returns [255] when calling ${peekMany.name}(1)`, () => {
+            const bs = new ByteStream([255])
+
+            deepEqual(bs.peekMany(1), [255])
+        })
+
+        it(`returns [] when calling ${peekMany.name}(0)`, () => {
+            const bs = new ByteStream([255])
+
+            deepEqual(bs.peekMany(0), [])
+        })
+
+        it(`fails when calling ${peekMany.name}(-1)`, () => {
+            const bs = new ByteStream([255])
+
+            throws(() => bs.peekMany(-1))
+        })
+
+        it(`fails when calling ${peekMany.name}(2)`, () => {
+            const bs = new ByteStream([255])
+
+            throws(() => bs.peekMany(2))
+        })
     })
 
-    it("should peekOne of Uint8Array([255]) as 255", () => {
-        const bs = new ByteStream(Uint8Array.from([255]))
+    describe(`initialized using ${ByteStream.name}.${from.name}([255])`, () => {
+        it("returns 255 when peeking a single byte", () => {
+            const bs = ByteStream.from([255])
 
-        strictEqual(bs.peekOne(), 255)
+            strictEqual(bs.peekOne(), 255)
+        })
     })
 
-    it("should peekOne of ByteStream.fromBytes([255]) as 255", () => {
-        const bs = ByteStream.fromBytes([255])
+    describe(`initialized using new ${ByteStream.name}(Uint8Array.from([255]))`, () => {
+        it("returns 255 when peeking a single byte", () => {
+            const bs = new ByteStream(Uint8Array.from([255]))
 
-        strictEqual(bs.peekOne(), 255)
+            strictEqual(bs.peekOne(), 255)
+        })
     })
 
-    it("should peekOne of ByteStream.fromBytes(ByteStream([255])) as 255", () => {
-        const bs = ByteStream.fromBytes(new ByteStream([255]))
-
-        strictEqual(bs.peekOne(), 255)
+    describe(`initialized using ${ByteStream.name}.${from.name}(new ${ByteStream.name}([255]))`, () => {
+        it("returns 255 when peeking a single byte", () => {
+            const bs = ByteStream.from(new ByteStream([255]))
+            strictEqual(bs.peekOne(), 255)
+        })
     })
 
-    it("should shiftOne of [255] as 255", () => {
-        const bs = new ByteStream([255])
+    describe("initialized with [255, 1]", () => {
+        it(`after shifting a single byte, stream is NOT at end`, () => {
+            const bs = new ByteStream([255, 1])
+            bs.shiftOne()
 
-        strictEqual(bs.shiftOne(), 255)
-    })
-
-    it("should be at end after shiftOne of [255] as 255", () => {
-        const bs = new ByteStream([255])
-        bs.shiftOne()
-
-        strictEqual(bs.isAtEnd(), true)
-    })
-
-    it("should not be at end after shiftOne of [255, 1] as 255", () => {
-        const bs = new ByteStream([255, 1])
-        bs.shiftOne()
-
-        strictEqual(bs.isAtEnd(), false)
-    })
-
-    it("should fail after doing shiftOne twice on [255]", () => {
-        const bs = new ByteStream([255])
-        bs.shiftOne()
-
-        throws(() => bs.shiftOne())
-    })
-
-    it("should fail after doing peekOne after shiftOne on [255]", () => {
-        const bs = new ByteStream([255])
-        bs.shiftOne()
-
-        throws(() => bs.peekOne())
-    })
-
-    it("should return [255] when calling shiftMany(1) on [255]", () => {
-        const bs = new ByteStream([255])
-
-        deepEqual(bs.shiftMany(1), [255])
-    })
-
-    it("should fail for shiftMany(0)", () => {
-        const bs = new ByteStream([255])
-
-        throws(() => bs.shiftMany(0))
-    })
-
-    it("should fail for shiftMany(2) on [255]", () => {
-        const bs = new ByteStream([255])
-
-        throws(() => bs.shiftMany(2))
-    })
-
-    it("should return [255] when calling peekMany(1) on [255]", () => {
-        const bs = new ByteStream([255])
-
-        deepEqual(bs.peekMany(1), [255])
-    })
-
-    it("should fail when calling peekMany(2) on [255]", () => {
-        const bs = new ByteStream([255])
-
-        throws(() => bs.peekMany(2))
-    })
-
-    it("should fail for peekMany(0)", () => {
-        const bs = new ByteStream([255])
-
-        throws(() => bs.peekMany(0))
+            strictEqual(bs.isAtEnd(), false)
+        })
     })
 })

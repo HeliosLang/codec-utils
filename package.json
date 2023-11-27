@@ -5,7 +5,8 @@
     "main": "src/index.js",
     "type": "module",
     "scripts": {
-        "build": "npx tsc",
+        "prebuild": "npm run clean && npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
+        "build": "npm test",
         "clean": "find src/ -name *.d.ts* | xargs rm",
         "prettify": "npx prettier . --write",
         "test": "npx prettier . --check && node --test  --experimental-test-coverage"

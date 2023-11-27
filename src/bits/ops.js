@@ -13,7 +13,13 @@ export function byteToBits(b, n = 8, prefix = true) {
         throw new Error("invalid byte")
     }
 
-    const s = padBits(b.toString(2), n)
+    const bits = b.toString(2)
+
+    if (n < bits.length) {
+        throw new Error("n is smaller than the number of bits")
+    }
+
+    const s = padBits(bits, n)
 
     if (prefix) {
         return "0b" + s
@@ -48,6 +54,7 @@ export function maskBits(b, i0, i1) {
 
 /**
  * Prepends zeroes to a bit-string so that 'result.length == n'.
+ * If `n < nCurrent`, pad to next multiple of `n`.
  * @example
  * padBits("1111", 8) == "00001111"
  * @param {string} bits
@@ -57,8 +64,10 @@ export function maskBits(b, i0, i1) {
 export function padBits(bits, n) {
     const nBits = bits.length
 
-    if (n < nBits) {
-        throw new Error("can't pad to something shorter")
+    if (nBits == n) {
+        return bits
+    } else if (n <= 0) {
+        throw new Error(`invalid pad length (must be > 0, got ${n})`)
     } else if (nBits % n != 0) {
         // padded to multiple of n
         const nPad = n - (nBits % n)
