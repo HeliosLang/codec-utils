@@ -36,9 +36,14 @@ export class ByteStream {
         }
     }
 
+    /**
+     * Copy ByteStream so mutations doesn't change original ByteStream
+     * @returns {ByteStream}
+     */
     copy() {
-        return new ByteStream(this.#bytes)
+        return new ByteStream(this.#bytes, this.#pos)
     }
+
     /**
      * @returns {boolean}
      */
