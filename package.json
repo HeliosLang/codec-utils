@@ -9,7 +9,7 @@
         "build": "npm test",
         "clean": "find src/ -name *.d.ts* | xargs rm -f",
         "prettify": "npx prettier . --write",
-        "prepublish": "npm run build",
+        "prepare": "npm run build",
         "postpublish": "npm run clean",
         "test": "npx prettier . --check && node --test  --experimental-test-coverage"
     },
