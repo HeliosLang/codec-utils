@@ -1,13 +1,13 @@
 {
     "name": "@helios-lang/codec-utils",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "Primitive manipulation functions commonly used in encoding and decoding algorithms",
     "main": "src/index.js",
     "type": "module",
     "scripts": {
         "prebuild": "npm run clean && npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
         "build": "npm test",
-        "clean": "find src/ -name *.d.ts* | xargs rm",
+        "clean": "find src/ -name *.d.ts* | xargs rm -f",
         "prettify": "npx prettier . --write",
         "test": "npx prettier . --check && node --test  --experimental-test-coverage"
     },

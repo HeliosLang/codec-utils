@@ -27,6 +27,10 @@ describe(decodeIntLE.name, () => {
     it("fails for [3.14] (invalid byte)", () => {
         throws(() => decodeIntLE([3.14]))
     })
+
+    it("fails for empty bytes", () => {
+        throws(() => decodeIntLE([]))
+    })
 })
 
 describe(encodeIntLE32.name, () => {

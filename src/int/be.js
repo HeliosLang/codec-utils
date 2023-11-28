@@ -33,6 +33,10 @@ export function encodeIntBE(x) {
  * @return {bigint}
  */
 export function decodeIntBE(bytes) {
+    if (bytes.length == 0) {
+        throw new Error("empty bytes")
+    }
+
     let p = 1n
     let total = 0n
 

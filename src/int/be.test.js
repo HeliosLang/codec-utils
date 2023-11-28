@@ -23,6 +23,10 @@ describe(decodeIntBE.name, () => {
     it("fails for [-1] (invalid byte)", () => {
         throws(() => decodeIntBE([-1]))
     })
+
+    it("fails for empty bytes", () => {
+        throws(() => decodeIntBE([]))
+    })
 })
 
 describe(encodeIntBE.name, () => {
