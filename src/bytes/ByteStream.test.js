@@ -4,9 +4,6 @@ import { describe, it } from "node:test"
 import { ByteStream } from "./ByteStream.js"
 
 const from = ByteStream.from
-const isAtEnd = ByteStream.prototype.isAtEnd
-const peekOne = ByteStream.prototype.peekOne
-const shiftOne = ByteStream.prototype.shiftOne
 const shiftMany = ByteStream.prototype.shiftMany
 const peekMany = ByteStream.prototype.peekMany
 
@@ -97,6 +94,14 @@ describe(ByteStream.name, () => {
     describe(`initialized using ${ByteStream.name}.${from.name}([255])`, () => {
         it("returns 255 when peeking a single byte", () => {
             const bs = ByteStream.from([255])
+
+            strictEqual(bs.peekOne(), 255)
+        })
+    })
+
+    describe(`initialized using ${ByteStream.name}.${from.name}([255]).copy()`, () => {
+        it("returns 255 when peeking a single byte", () => {
+            const bs = ByteStream.from([255]).copy()
 
             strictEqual(bs.peekOne(), 255)
         })

@@ -10,16 +10,18 @@ export class ByteStream {
     #pos
 
     /**
+     * Not intended for external use
      * @param {number[] | Uint8Array} bytes
+     * @param {number} pos
      */
-    constructor(bytes) {
+    constructor(bytes, pos = 0) {
         if (bytes instanceof Uint8Array) {
             this.#bytes = bytes
         } else {
             this.#bytes = Uint8Array.from(bytes)
         }
 
-        this.#pos = 0
+        this.#pos = pos
     }
 
     /**
@@ -34,6 +36,9 @@ export class ByteStream {
         }
     }
 
+    copy() {
+        return new ByteStream(this.#bytes)
+    }
     /**
      * @returns {boolean}
      */
