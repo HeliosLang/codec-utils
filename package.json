@@ -5,13 +5,13 @@
     "main": "src/index.js",
     "type": "module",
     "scripts": {
-        "prebuild": "npm run clean && npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
         "build": "npm test",
         "clean": "find src/ -name *.d.ts* | xargs rm -f",
-        "prettify": "npx prettier . --write",
-        "prepare": "npm run build",
         "postpublish": "npm run clean",
-        "test": "npx prettier . --check && node --test  --experimental-test-coverage"
+        "prebuild": "npm run clean && npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
+        "prepare": "npm run build",
+        "prettify": "npx prettier . --write",
+        "test": "npx prettier . --check && tsc -p jsconfig.json --noEmit && node --test  --experimental-test-coverage"
     },
     "author": "Christian Schmitz",
     "license": "BSD-3-Clause",
