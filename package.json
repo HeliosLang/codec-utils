@@ -11,7 +11,7 @@
         "prebuild": "npm run clean && npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
         "prepare": "npm run build",
         "prettify": "npx prettier . --write",
-        "test": "npx prettier . --check && tsc -p jsconfig.json --noEmit && node --test  --experimental-test-coverage"
+        "test": "npx prettier . --check && tsc -p jsconfig.json --noEmit && node --test --experimental-test-coverage"
     },
     "author": "Christian Schmitz",
     "license": "BSD-3-Clause",
