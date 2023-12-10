@@ -1,8 +1,48 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 import { hexToBytes } from "./base16.js"
-import { decodeBase64, encodeBase64, isValidBase64 } from "./base64.js"
+import { Base64, decodeBase64, encodeBase64, isValidBase64 } from "./base64.js"
 import { decodeUtf8, encodeUtf8 } from "../utf8/index.js"
+
+describe(`${Base64.name} constructor`, () => {
+    it("fails for non-64 char alphabet", () => {
+        throws(() => new Base64({ alphabet: "abcdefg" }))
+    })
+
+    it("fails for non-unique 64 char alphabet", () => {
+        throws(
+            () =>
+                new Base64({
+                    alphabet:
+                        "AACDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+                })
+        )
+    })
+
+    it("fails for non-single padding char (0 chars)", () => {
+        throws(
+            () => new Base64({ alphabet: Base64.DEFAULT_ALPHABET, padChar: "" })
+        )
+    })
+
+    it("fails for non-single padding char (more than 1 char)", () => {
+        throws(
+            () =>
+                new Base64({ alphabet: Base64.DEFAULT_ALPHABET, padChar: "==" })
+        )
+    })
+
+    it("fails if padding char is part of alphabet", () => {
+        throws(
+            () =>
+                new Base64({
+                    alphabet:
+                        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+=",
+                    padChar: "="
+                })
+        )
+    })
+})
 
 describe(isValidBase64.name, () => {
     it("returns true for empty string", () => {
@@ -60,8 +100,28 @@ describe(encodeBase64.name, () => {
 })
 
 describe(decodeBase64.name, () => {
+    const paddingCodec = new Base64({
+        alphabet: Base64.DEFAULT_ALPHABET,
+        padChar: Base64.DEFAULT_PAD_CHAR,
+        strict: true
+    })
+
+    const paddingLessCodec = new Base64({ alphabet: Base64.DEFAULT_ALPHABET })
+
     it("returns #14fb9c03 for FPucAw==", () => {
         deepEqual(decodeBase64("FPucAw=="), hexToBytes("14fb9c03"))
+    })
+
+    it("returns #14fb9c03 for FPucAw", () => {
+        deepEqual(decodeBase64("FPucAw"), hexToBytes("14fb9c03"))
+    })
+
+    it("fails for FPucAw== for padding-less configuration", () => {
+        throws(() => paddingLessCodec.decode("FPucAw=="))
+    })
+
+    it("fails for FPucAw if strict is true", () => {
+        throws(() => paddingCodec.decode("FPucAw"))
     })
 
     it("fails for }PucAw==", () => {

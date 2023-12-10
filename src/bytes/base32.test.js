@@ -2,16 +2,53 @@ import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
 import { encodeUtf8 } from "../utf8/index.js"
-import {
-    DEFAULT_BASE32_ALPHABET,
-    decodeBase32,
-    encodeBase32,
-    isValidBase32
-} from "./base32.js"
+import { Base32, decodeBase32, encodeBase32, isValidBase32 } from "./base32.js"
 
 /**
- * test vectors taken from https://chromium.googlesource.com/chromium/src/+/lkgr/components/base32/base32_unittest.cc
+ * Some test vectors taken from https://chromium.googlesource.com/chromium/src/+/lkgr/components/base32/base32_unittest.cc
  */
+
+describe(`${Base32.name} constructor`, () => {
+    it("fails for non-32 char alphabet", () => {
+        throws(() => new Base32({ alphabet: "abcdefg" }))
+    })
+
+    it("fails for non-unique 32 char alphabet", () => {
+        throws(
+            () => new Base32({ alphabet: "aacdefghijklmnopqrstuvwxyz234567" })
+        )
+    })
+
+    it("fails for non-single char padding (0 chars)", () => {
+        throws(
+            () =>
+                new Base32({
+                    alphabet: Base32.DEFAULT_ALPHABET,
+                    padChar: ""
+                })
+        )
+    })
+
+    it("fails for non-single char padding (more than 1 chars)", () => {
+        throws(
+            () =>
+                new Base32({
+                    alphabet: Base32.DEFAULT_ALPHABET,
+                    padChar: "=="
+                })
+        )
+    })
+
+    it("fails if padding char is part of alphabet", () => {
+        throws(
+            () =>
+                new Base32({
+                    alphabet: "abcdefghijklmnopqrstuvwxyz23456=",
+                    padChar: "="
+                })
+        )
+    })
+})
 
 describe(isValidBase32.name, () => {
     it("returns true for an empty string", () => {
@@ -48,64 +85,59 @@ describe(isValidBase32.name, () => {
 })
 
 describe(`${encodeBase32.name} without padding`, () => {
+    const codec = new Base32({})
+
     it("returns an empty string for []", () => {
-        strictEqual(encodeBase32([]), "")
+        strictEqual(codec.encode([]), "")
     })
 
     it('returns "my" for the utf-8 bytes of "f"', () => {
-        strictEqual(
-            encodeBase32(encodeUtf8("f"), DEFAULT_BASE32_ALPHABET, ""),
-            "my"
-        )
+        strictEqual(codec.encode(encodeUtf8("f")), "my")
     })
 
     it('returns "mzxq" for the utf-8 bytes of "fo"', () => {
-        strictEqual(
-            encodeBase32(encodeUtf8("fo"), DEFAULT_BASE32_ALPHABET, ""),
-            "mzxq"
-        )
+        strictEqual(codec.encode(encodeUtf8("fo")), "mzxq")
     })
 
     it('returns "mzxw6" for the utf-8 bytes of "foo"', () => {
-        strictEqual(
-            encodeBase32(encodeUtf8("foo"), DEFAULT_BASE32_ALPHABET, ""),
-            "mzxw6"
-        )
+        strictEqual(codec.encode(encodeUtf8("foo")), "mzxw6")
     })
 
     it('returns "mzxw6yq" for the utf-8 bytes of "foob"', () => {
-        strictEqual(
-            encodeBase32(encodeUtf8("foob"), DEFAULT_BASE32_ALPHABET, ""),
-            "mzxw6yq"
-        )
+        strictEqual(codec.encode(encodeUtf8("foob")), "mzxw6yq")
     })
 
     it('returns "mzxw6ytb" for the utf-8 bytes of "fooba"', () => {
-        strictEqual(
-            encodeBase32(encodeUtf8("fooba"), DEFAULT_BASE32_ALPHABET, ""),
-            "mzxw6ytb"
-        )
+        strictEqual(codec.encode(encodeUtf8("fooba")), "mzxw6ytb")
     })
 
     it('returns "mzxw6ytboi" for the utf-8 bytes of "foobar"', () => {
-        strictEqual(
-            encodeBase32(encodeUtf8("foobar"), DEFAULT_BASE32_ALPHABET, ""),
-            "mzxw6ytboi"
-        )
+        strictEqual(codec.encode(encodeUtf8("foobar")), "mzxw6ytboi")
     })
 })
 
 describe(decodeBase32.name, () => {
+    const paddingLessCodec = new Base32({ alphabet: Base32.DEFAULT_ALPHABET })
+    const paddingCodec = new Base32({
+        alphabet: Base32.DEFAULT_ALPHABET,
+        padChar: Base32.DEFAULT_PAD_CHAR,
+        strict: true
+    })
+
     it("returns [] for an empty string", () => {
         deepEqual(decodeBase32(""), [])
     })
 
     it('returns the utf-8 bytes of "f" for "my"', () => {
-        deepEqual(decodeBase32("my"), encodeUtf8("f"))
+        deepEqual(paddingLessCodec.decode("my"), encodeUtf8("f"))
     })
 
     it('returns the utf-8 bytes of "fo" for "mzxq"', () => {
         deepEqual(decodeBase32("mzxq"), encodeUtf8("fo"))
+    })
+
+    it('fails for "mzxq" if strict', () => {
+        throws(() => paddingCodec.decode("mzxq"))
     })
 
     it('returns the utf-8 btyes of "foo" for "mzxw6"', () => {
