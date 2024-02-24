@@ -1,7 +1,7 @@
 import { strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
-import { byteToBits, maskBits, padBits } from "./ops.js"
+import { byteToBits, maskBits, padBits, getBit } from "./ops.js"
 
 describe(byteToBits.name, () => {
     describe("calling with 7 as the input byte", () => {
@@ -94,5 +94,23 @@ describe(padBits.name, () => {
         it("fails for negative n", () => {
             throws(() => padBits("1111", -1))
         })
+    })
+})
+
+describe(getBit.name, () => {
+    it("get first bit of #00ff returns 0", () => {
+        strictEqual(getBit([0x00, 0xff], 0), 0)
+    })
+
+    it("get last bit of #00ff returns 1", () => {
+        strictEqual(getBit([0x00, 0xff], 15), 1)
+    })
+
+    it("returns 0 when getting indexing past bytes", () => {
+        strictEqual(getBit([0x00, 0xff], 16), 0)
+    })
+
+    it("returns 0 when calling with negative index", () => {
+        strictEqual(getBit([0x00, 0xff], -1), 0)
     })
 })

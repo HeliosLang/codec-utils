@@ -77,3 +77,12 @@ export function padBits(bits, n) {
 
     return bits
 }
+
+/**
+ * @param {number[]} bytes
+ * @param {number} i - bit index
+ * @returns {number} - 0 or 1
+ */
+export function getBit(bytes, i) {
+    return (bytes[Math.floor(i / 8)] >> i % 8) & 1
+}
