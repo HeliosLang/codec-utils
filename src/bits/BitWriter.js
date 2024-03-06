@@ -68,7 +68,6 @@ export class BitWriter {
     /**
      * Add padding to the BitWriter in order to align with the byte boundary.
      * If 'force == true' then 8 bits are added if the BitWriter is already aligned.
-     * @private
      * @param {boolean} force
      */
     padToByteBoundary(force = false) {
