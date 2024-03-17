@@ -1,6 +1,6 @@
 /**
  * @template T
- * @typedef {null | T} Option
+ * @typedef {null | undefined | T} Option
  */
 
 /**
@@ -9,7 +9,7 @@
  * @returns {opt is T}
  */
 export function isSome(opt) {
-    return opt !== null
+    return opt !== null && opt !== undefined
 }
 
 /**
@@ -18,5 +18,5 @@ export function isSome(opt) {
  * @returns {opt is null}
  */
 export function isNone(opt) {
-    return opt === null
+    return opt === null || opt === undefined
 }
