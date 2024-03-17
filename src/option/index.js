@@ -4,6 +4,11 @@
  */
 
 /**
+ * @type {null}
+ */
+export const None = null
+
+/**
  * @template T
  * @param {Option<T>} opt
  * @returns {opt is T}
