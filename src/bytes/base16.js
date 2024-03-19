@@ -45,6 +45,27 @@ export function hexToBytes(hex) {
 }
 
 /**
+ * @typedef {string | number[] | {bytes: number[]}} ByteArrayLike
+ */
+
+/**
+ * Permissive conversion to bytes
+ * @param {ByteArrayLike} b
+ * @returns {number[]}
+ */
+export function toBytes(b) {
+    if (Array.isArray(b)) {
+        return b
+    } else if (typeof b == "string") {
+        return hexToBytes(b)
+    } else if (typeof b == "object" && "bytes" in b) {
+        return b.bytes
+    } else {
+        throw new Error("not ByteArrayLike")
+    }
+}
+
+/**
  * Converts a list of uint8 bytes into its hexadecimal string representation.
  * @example
  * bytesToHex([0, 255, 52]) == "00ff34"

@@ -20,7 +20,7 @@ export function isSome(opt) {
 /**
  * @template T
  * @param {Option<T>} opt
- * @returns {opt is null}
+ * @returns {opt is (null | undefined)}
  */
 export function isNone(opt) {
     return opt === null || opt === undefined
