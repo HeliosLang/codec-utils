@@ -23,6 +23,10 @@ export function isValidHex(s) {
 export function hexToBytes(hex) {
     hex = hex.trim()
 
+    if (hex.startsWith("#")) {
+        hex = hex.slice(1)
+    }
+
     const bytes = []
 
     const n = hex.length
@@ -42,27 +46,6 @@ export function hexToBytes(hex) {
     }
 
     return bytes
-}
-
-/**
- * @typedef {string | number[] | {bytes: number[]}} ByteArrayLike
- */
-
-/**
- * Permissive conversion to bytes
- * @param {ByteArrayLike} b
- * @returns {number[]}
- */
-export function toBytes(b) {
-    if (Array.isArray(b)) {
-        return b
-    } else if (typeof b == "string") {
-        return hexToBytes(b)
-    } else if (typeof b == "object" && "bytes" in b) {
-        return b.bytes
-    } else {
-        throw new Error("not ByteArrayLike")
-    }
 }
 
 /**
