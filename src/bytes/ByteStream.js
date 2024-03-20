@@ -35,7 +35,7 @@ export class ByteStream {
     }
 
     /**
-     * @param {number[] | string | Uint8Array | ByteStream} bytes
+     * @param {ByteStreamLike | ByteStream} bytes
      * @returns {ByteStream}
      */
     static from(bytes) {
@@ -61,6 +61,9 @@ export class ByteStream {
         return this.#pos >= this.#bytes.length
     }
 
+    /**
+     * @returns {number}
+     */
     peekOne() {
         if (this.#pos < this.#bytes.length) {
             return this.#bytes[this.#pos]
