@@ -2,7 +2,10 @@ import { hexToBytes } from "./base16.js"
 import { ByteStream } from "./ByteStream.js"
 
 /**
- * @typedef {string | number[] | {bytes: number[]} | ByteStream} ByteArrayLike
+ * @typedef {import("./ByteStream.js").ByteStreamLike} ByteStreamLike
+ */
+/**
+ * @typedef {ByteStreamLike | ByteStream} ByteArrayLike
  */
 
 /**
@@ -19,6 +22,8 @@ export function toBytes(b) {
         return b.bytes
     } else if (b instanceof ByteStream) {
         return b.peekRemaining()
+    } else if (b instanceof Uint8Array) {
+        return Array.from(b)
     } else {
         throw new Error("not ByteArrayLike")
     }

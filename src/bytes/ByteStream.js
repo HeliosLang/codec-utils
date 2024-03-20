@@ -1,5 +1,9 @@
 import { hexToBytes } from "./base16.js"
 
+/**
+ * @typedef {string | number[] | {bytes: number[]} | Uint8Array} ByteStreamLike
+ */
+
 export class ByteStream {
     /**
      * @type {Uint8Array}
@@ -13,7 +17,7 @@ export class ByteStream {
 
     /**
      * Not intended for external use
-     * @param {number[] | string | Uint8Array} bytes
+     * @param {ByteStreamLike} bytes
      * @param {number} pos
      */
     constructor(bytes, pos = 0) {
@@ -21,6 +25,8 @@ export class ByteStream {
             this.#bytes = bytes
         } else if (typeof bytes == "string") {
             this.#bytes = Uint8Array.from(hexToBytes(bytes))
+        } else if (typeof bytes == "object" && "bytes" in bytes) {
+            this.#bytes = Uint8Array.from(bytes.bytes)
         } else {
             this.#bytes = Uint8Array.from(bytes)
         }
