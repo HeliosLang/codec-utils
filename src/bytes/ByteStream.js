@@ -81,6 +81,13 @@ export class ByteStream {
     }
 
     /**
+     * @returns {number[]}
+     */
+    peekRemaining() {
+        return Array.from(this.#bytes.slice(this.#pos))
+    }
+
+    /**
      * @returns {number}
      */
     shiftOne() {
@@ -109,5 +116,14 @@ export class ByteStream {
         } else {
             throw new Error("at end")
         }
+    }
+
+    /**
+     * @returns {number[]}
+     */
+    shiftRemaining() {
+        const res = Array.from(this.#bytes.slice(this.#pos))
+        this.#pos = this.#bytes.length
+        return res
     }
 }
