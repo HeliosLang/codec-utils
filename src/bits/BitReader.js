@@ -1,4 +1,4 @@
-import { byteToBits, maskBits } from "./ops.js"
+import { maskBits } from "./ops.js"
 
 /**
  * Read non-byte aligned numbers
