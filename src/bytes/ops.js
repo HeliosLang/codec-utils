@@ -25,7 +25,7 @@ export function padBytes(bytes, n) {
  * @param {number[] | Uint8Array} a
  * @param {number[] | Uint8Array} b
  * @param {boolean} shortestFirst defaults to false (strictly lexicographic comparison)
- * @returns {number} -1 if a < b, 0 if a == b, 1 if a > b
+ * @returns {-1 | 0 | 1} -1 if a < b, 0 if a == b, 1 if a > b
  */
 export function compareBytes(a, b, shortestFirst = false) {
     const na = a.length
@@ -48,4 +48,14 @@ export function compareBytes(a, b, shortestFirst = false) {
     } else {
         return 0
     }
+}
+
+/**
+ *
+ * @param {number[] | Uint8Array} a
+ * @param {number[] | Uint8Array} b
+ * @returns {boolean}
+ */
+export function equalsBytes(a, b) {
+    return compareBytes(a, b) == 0
 }

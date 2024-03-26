@@ -1,7 +1,7 @@
 import { hexToBytes } from "./base16.js"
 
 /**
- * @typedef {string | number[] | {bytes: number[]} | Uint8Array} ByteStreamLike
+ * @typedef {string | number[] | {value: number[]} | Uint8Array} ByteStreamLike
  */
 
 export class ByteStream {
@@ -25,8 +25,8 @@ export class ByteStream {
             this.#bytes = bytes
         } else if (typeof bytes == "string") {
             this.#bytes = Uint8Array.from(hexToBytes(bytes))
-        } else if (typeof bytes == "object" && "bytes" in bytes) {
-            this.#bytes = Uint8Array.from(bytes.bytes)
+        } else if (typeof bytes == "object" && "value" in bytes) {
+            this.#bytes = Uint8Array.from(bytes.value)
         } else {
             this.#bytes = Uint8Array.from(bytes)
         }

@@ -18,8 +18,8 @@ export function toBytes(b) {
         return b
     } else if (typeof b == "string") {
         return hexToBytes(b)
-    } else if (typeof b == "object" && "bytes" in b) {
-        return b.bytes
+    } else if (typeof b == "object" && "value" in b) {
+        return b.value
     } else if (b instanceof ByteStream) {
         return b.peekRemaining()
     } else if (b instanceof Uint8Array) {
