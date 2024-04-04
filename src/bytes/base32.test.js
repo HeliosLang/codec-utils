@@ -1,7 +1,7 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
-import { encodeUtf8 } from "../utf8/index.js"
+import { encodeUtf8 } from "../string/index.js"
 import { Base32, decodeBase32, encodeBase32, isValidBase32 } from "./base32.js"
 
 /**

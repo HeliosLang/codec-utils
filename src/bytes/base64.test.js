@@ -2,7 +2,7 @@ import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 import { hexToBytes } from "./base16.js"
 import { Base64, decodeBase64, encodeBase64, isValidBase64 } from "./base64.js"
-import { decodeUtf8, encodeUtf8 } from "../utf8/index.js"
+import { decodeUtf8, encodeUtf8 } from "../string/index.js"
 
 describe(`${Base64.name} constructor`, () => {
     it("fails for non-64 char alphabet", () => {

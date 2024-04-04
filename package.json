@@ -3,18 +3,17 @@
     "version": "0.1.26",
     "description": "Primitive manipulation functions commonly used in encoding and decoding algorithms",
     "main": "src/index.js",
+    "types": "types/index.d.ts",
     "type": "module",
     "scripts": {
-        "build": "npm test",
-        "clean": "find src/ -name *.d.ts* | xargs rm -f",
-        "postpublish": "npm run clean",
-        "prebuild": "npm run clean && npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
-        "prepare": "npm run build",
+        "build": "npm run build:types",
+        "build:types": "npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
+        "prepack": "npm run build",
         "prettify": "npx prettier . --write",
         "test": "npm run test:pretty && npm run test:types && npm run test:suite",
         "test:pretty": "npx prettier . --check",
         "test:suite": "node --test --experimental-test-coverage",
-        "test:types": "tsc -p jsconfig.json --noEmit"
+        "test:types": "npm run build:types"
     },
     "author": "Christian Schmitz",
     "license": "BSD-3-Clause",
