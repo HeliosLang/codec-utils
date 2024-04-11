@@ -1,3 +1,7 @@
+/**
+ * @typedef {import("./IntLike.js").IntLike} IntLike
+ */
+
 const BASE58_ALPHABET =
     "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
 
@@ -53,7 +57,7 @@ function encodeBase58Raw(x) {
 }
 
 /**
- * @param {number | bigint} x
+ * @param {IntLike} x
  * @returns {string}
  */
 export function encodeBase58(x) {

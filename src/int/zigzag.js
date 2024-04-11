@@ -1,5 +1,9 @@
 /**
- * @param {number | bigint} x
+ * @typedef {import("./IntLike.js").IntLike} IntLike
+ */
+
+/**
+ * @param {IntLike} x
  * @returns {bigint}
  */
 export function encodeZigZag(x) {
@@ -13,7 +17,7 @@ export function encodeZigZag(x) {
 }
 
 /**
- * @param {number | bigint} x
+ * @param {IntLike} x
  * @returns {bigint}
  */
 export function decodeZigZag(x) {

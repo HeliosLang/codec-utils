@@ -1,7 +1,11 @@
 /**
+ * @typedef {import("./IntLike.js").IntLike} IntLike
+ */
+
+/**
  * Converts an unbounded integer into a list of big endian uint8 numbers.
  * Throws an error if `x` is negative.
- * @param {number | bigint} x
+ * @param {IntLike} x
  * @returns {number[]}
  */
 export function encodeIntBE(x) {
