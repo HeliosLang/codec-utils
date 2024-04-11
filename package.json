@@ -6,7 +6,7 @@
     "types": "types/index.d.ts",
     "type": "module",
     "scripts": {
-        "build": "npm run build:types",
+        "build": "npm run prettify && npm run build:types && npm run test:suite",
         "build:types": "npx tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
         "prepack": "npm run build",
         "prettify": "npx prettier . --write",
