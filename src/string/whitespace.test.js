@@ -1,5 +1,5 @@
 import { describe, it } from "node:test"
-import { removeWhitespace } from "./whitespace.js"
+import { removeWhitespace, replaceTabs } from "./whitespace.js"
 import { strictEqual } from "node:assert"
 
 describe(removeWhitespace.name, () => {
@@ -25,5 +25,14 @@ describe(removeWhitespace.name, () => {
         const src = "   hello   world\t\t"
 
         strictEqual(removeWhitespace(src), "helloworld")
+    })
+})
+
+describe(replaceTabs.name, () => {
+    it("tabs replaced correctly", () => {
+        const tab = "  "
+        const src = "\t\t\t"
+
+        strictEqual(replaceTabs(src, tab), [tab, tab, tab].join(""))
     })
 })
