@@ -2,6 +2,7 @@ import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
 import { decodeIntBE, encodeIntBE } from "./be.js"
+import { hexToBytes } from "../index.js"
 
 describe(decodeIntBE.name, () => {
     it("returns 255n for [255]", () => {
@@ -26,6 +27,38 @@ describe(decodeIntBE.name, () => {
 
     it("fails for empty bytes", () => {
         throws(() => decodeIntBE([]))
+    })
+})
+
+describe(`${decodeIntBE.name} compared to alt formula`, () => {
+    /**
+     * @param {number[]} bytes 
+     * @returns {BigInt}
+     */
+    const alt = (bytes) => {
+        let sum = 0n
+        bytes = bytes.slice().reverse()
+        bytes.forEach((b, i) => {
+            sum += BigInt(b)*(1n << BigInt(i*8))
+        })
+        return sum
+    }
+
+    const testVector = [
+        "00",
+        "80",
+        "ff",
+        "ffff",
+        "fefe",
+        "8080",
+        "abcdef0123456789"
+    ]
+
+    testVector.forEach(t => {
+        it(`ok for #${t}`, () => {
+            const bytes = hexToBytes(t)
+            strictEqual(decodeIntBE(bytes), alt(bytes))
+        })
     })
 })
 
