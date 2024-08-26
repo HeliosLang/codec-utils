@@ -1,7 +1,7 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
-import { compareBytes, padBytes } from "./ops.js"
+import { compareBytes, padBytes, prepadBytes } from "./ops.js"
 import { hexToBytes } from "./base16.js"
 
 describe(padBytes.name, () => {
@@ -35,6 +35,41 @@ describe(padBytes.name, () => {
             expect[1] = 1
             expect[2] = 2
             deepEqual(padBytes([0, 1, 2], 32), expect)
+        })
+    })
+})
+
+describe(prepadBytes.name, () => {
+    describe("prepadding with n=0", () => {
+        it("returns [] for []", () => {
+            deepEqual(prepadBytes([], 0), [])
+        })
+
+        it("fails for [1]", () => {
+            throws(() => prepadBytes([1], 0))
+        })
+    })
+
+    describe("prepadding with n=2", () => {
+        it("returns [0, 0] for []", () => {
+            deepEqual(padBytes([], 2), [0, 0])
+        })
+
+        it("returns [0, 1] for [1]", () => {
+            deepEqual(prepadBytes([1], 2), [0, 1])
+        })
+    })
+
+    describe("prepadding [0, 1, 2]", () => {
+        it("fails if n=-1", () => {
+            throws(() => prepadBytes([0, 1, 2], -1))
+        })
+
+        it("returns [0, 0, ..., 0, 1, 2] if n=32", () => {
+            const expect = new Array(32).fill(0)
+            expect[30] = 1
+            expect[31] = 2
+            deepEqual(prepadBytes([0, 1, 2], 32), expect)
         })
     })
 })

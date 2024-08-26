@@ -22,6 +22,30 @@ export function padBytes(bytes, n) {
 }
 
 /**
+ * Pad by prepending zeroes.
+ * Throws an error if bytes.length > n
+ * @param {number[]} bytes
+ * @param {number} n
+ */
+export function prepadBytes(bytes, n) {
+    const nBytes = bytes.length
+
+    if (nBytes == n) {
+        return bytes
+    } else if (n <= 0) {
+        throw new Error(`invalid prepad length (must be > 0, got ${n})`)
+    } else if (nBytes > n) {
+        throw new Error(
+            `padding length smaller than bytes length (${n} < ${nBytes})`
+        )
+    } else {
+        const nPad = n - nBytes
+
+        return new Array(nPad).fill(0).concat(bytes)
+    }
+}
+
+/**
  * @param {number[] | Uint8Array} a
  * @param {number[] | Uint8Array} b
  * @param {boolean} shortestFirst defaults to false (strictly lexicographic comparison)

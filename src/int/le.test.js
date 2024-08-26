@@ -36,14 +36,14 @@ describe(decodeIntLE.name, () => {
 
 describe(`${decodeIntLE.name} compared to alt formula`, () => {
     /**
-     * @param {number[]} bytes 
+     * @param {number[]} bytes
      * @returns {BigInt}
      */
     const alt = (bytes) => {
         let sum = 0n
         bytes = bytes.slice()
         bytes.forEach((b, i) => {
-            sum += BigInt(b)*(1n << BigInt(i*8))
+            sum += BigInt(b) * (1n << BigInt(i * 8))
         })
         return sum
     }
@@ -58,7 +58,7 @@ describe(`${decodeIntLE.name} compared to alt formula`, () => {
         "abcdef0123456789"
     ]
 
-    testVector.forEach(t => {
+    testVector.forEach((t) => {
         it(`ok for #${t}`, () => {
             const bytes = hexToBytes(t)
             strictEqual(decodeIntLE(bytes), alt(bytes))
