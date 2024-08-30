@@ -1,7 +1,7 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 
-import { compareBytes, padBytes, prepadBytes } from "./ops.js"
+import { compareBytes, dummyBytes, padBytes, prepadBytes } from "./ops.js"
 import { hexToBytes } from "./base16.js"
 
 describe(padBytes.name, () => {
@@ -122,5 +122,11 @@ describe(compareBytes.name, () => {
             compareBytes(hexToBytes("010101"), hexToBytes("01010101")),
             -1
         )
+    })
+})
+
+describe(dummyBytes.name, () => {
+    it("returns all 0 with default 2nd arg", () => {
+        deepEqual(dummyBytes(28), new Array(28).fill(0))
     })
 })
