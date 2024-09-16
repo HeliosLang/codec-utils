@@ -37,7 +37,7 @@ export class Base32 {
     constructor(props = Base32.DEFAULT_PROPS) {
         const alphabet = props.alphabet ?? Base32.DEFAULT_ALPHABET
         const padChar = "padChar" in props ? props.padChar : ""
-        const strict = "strict" in props ? (props.strict ?? false) : false
+        const strict = "strict" in props ? props.strict ?? false : false
 
         if (alphabet.length != 32) {
             throw new Error(

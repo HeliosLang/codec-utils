@@ -37,7 +37,7 @@ export class Base64 {
     constructor(props = Base64.DEFAULT_PROPS) {
         const alphabet = props.alphabet ?? Base64.DEFAULT_ALPHABET
         const padChar = "padChar" in props ? props.padChar : ""
-        const strict = "strict" in props ? (props.strict ?? false) : false
+        const strict = "strict" in props ? props.strict ?? false : false
 
         if (alphabet.length != 64) {
             throw new Error(
