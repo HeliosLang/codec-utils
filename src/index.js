@@ -1,3 +1,4 @@
+export * from "./array/index.js"
 export * from "./bits/index.js"
 export * from "./bytes/index.js"
 export * from "./float/index.js"
