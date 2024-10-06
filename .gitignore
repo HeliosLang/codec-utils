@@ -1,6 +1,7 @@
 *.d.ts
 *.d.ts.map
 node_modules
+node_modules.prev
 *.swp
 log.*
 *.log
