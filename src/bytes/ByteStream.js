@@ -6,14 +6,16 @@ import { hexToBytes } from "./base16.js"
 
 export class ByteStream {
     /**
+     * @private
      * @type {Uint8Array}
      */
-    #bytes
+    _bytes
 
     /**
+     * @private
      * @type {number}
      */
-    #pos
+    _pos
 
     /**
      * Not intended for external use
@@ -22,16 +24,16 @@ export class ByteStream {
      */
     constructor(bytes, pos = 0) {
         if (bytes instanceof Uint8Array) {
-            this.#bytes = bytes
+            this._bytes = bytes
         } else if (typeof bytes == "string") {
-            this.#bytes = Uint8Array.from(hexToBytes(bytes))
+            this._bytes = Uint8Array.from(hexToBytes(bytes))
         } else if (typeof bytes == "object" && "value" in bytes) {
-            this.#bytes = Uint8Array.from(bytes.value)
+            this._bytes = Uint8Array.from(bytes.value)
         } else {
-            this.#bytes = Uint8Array.from(bytes)
+            this._bytes = Uint8Array.from(bytes)
         }
 
-        this.#pos = pos
+        this._pos = pos
     }
 
     /**
@@ -51,22 +53,22 @@ export class ByteStream {
      * @returns {ByteStream}
      */
     copy() {
-        return new ByteStream(this.#bytes, this.#pos)
+        return new ByteStream(this._bytes, this._pos)
     }
 
     /**
      * @returns {boolean}
      */
     isAtEnd() {
-        return this.#pos >= this.#bytes.length
+        return this._pos >= this._bytes.length
     }
 
     /**
      * @returns {number}
      */
     peekOne() {
-        if (this.#pos < this.#bytes.length) {
-            return this.#bytes[this.#pos]
+        if (this._pos < this._bytes.length) {
+            return this._bytes[this._pos]
         } else {
             throw new Error("at end")
         }
@@ -82,8 +84,8 @@ export class ByteStream {
             throw new Error("unexpected negative n")
         }
 
-        if (this.#pos + n <= this.#bytes.length) {
-            return Array.from(this.#bytes.slice(this.#pos, this.#pos + n))
+        if (this._pos + n <= this._bytes.length) {
+            return Array.from(this._bytes.slice(this._pos, this._pos + n))
         } else {
             throw new Error("at end")
         }
@@ -93,16 +95,16 @@ export class ByteStream {
      * @returns {number[]}
      */
     peekRemaining() {
-        return Array.from(this.#bytes.slice(this.#pos))
+        return Array.from(this._bytes.slice(this._pos))
     }
 
     /**
      * @returns {number}
      */
     shiftOne() {
-        if (this.#pos < this.#bytes.length) {
-            const b = this.#bytes[this.#pos]
-            this.#pos += 1
+        if (this._pos < this._bytes.length) {
+            const b = this._bytes[this._pos]
+            this._pos += 1
             return b
         } else {
             throw new Error("at end")
@@ -118,9 +120,9 @@ export class ByteStream {
             throw new Error("unexpected negative n")
         }
 
-        if (this.#pos + n <= this.#bytes.length) {
-            const res = Array.from(this.#bytes.slice(this.#pos, this.#pos + n))
-            this.#pos += n
+        if (this._pos + n <= this._bytes.length) {
+            const res = Array.from(this._bytes.slice(this._pos, this._pos + n))
+            this._pos += n
             return res
         } else {
             throw new Error("at end")
@@ -131,8 +133,8 @@ export class ByteStream {
      * @returns {number[]}
      */
     shiftRemaining() {
-        const res = Array.from(this.#bytes.slice(this.#pos))
-        this.#pos = this.#bytes.length
+        const res = Array.from(this._bytes.slice(this._pos))
+        this._pos = this._bytes.length
         return res
     }
 }

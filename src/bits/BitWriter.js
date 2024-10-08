@@ -7,26 +7,28 @@ import { padBits } from "./ops.js"
 export class BitWriter {
     /**
      * Concatenated and padded upon finalization
+     * @private
      * @type {string[]}
      */
-    #parts
+    _parts
 
     /**
      * Number of bits written so far
+     * @private
      * @type {number}
      */
-    #n
+    _n
 
     constructor() {
-        this.#parts = []
-        this.#n = 0
+        this._parts = []
+        this._n = 0
     }
 
     /**
      * @type {number}
      */
     get length() {
-        return this.#n
+        return this._n
     }
 
     /**
@@ -44,8 +46,8 @@ export class BitWriter {
             }
         }
 
-        this.#parts.push(bitChars)
-        this.#n += bitChars.length
+        this._parts.push(bitChars)
+        this._n += bitChars.length
 
         return this
     }
@@ -72,8 +74,8 @@ export class BitWriter {
      */
     padToByteBoundary(force = false) {
         let nPad = 0
-        if (this.#n % 8 != 0) {
-            nPad = 8 - (this.#n % 8)
+        if (this._n % 8 != 0) {
+            nPad = 8 - (this._n % 8)
         } else if (force) {
             nPad = 8
         }
@@ -82,9 +84,9 @@ export class BitWriter {
             let padding = new Array(nPad).fill("0")
             padding[nPad - 1] = "1"
 
-            this.#parts.push(padding.join(""))
+            this._parts.push(padding.join(""))
 
-            this.#n += nPad
+            this._n += nPad
         }
     }
 
@@ -94,9 +96,9 @@ export class BitWriter {
      * @returns {string}
      */
     pop(n) {
-        if (n > this.#n) {
+        if (n > this._n) {
             throw new Error(
-                `too many bits to pop, only have ${this.#n} bits, but want ${n}`
+                `too many bits to pop, only have ${this._n} bits, but want ${n}`
             )
         }
 
@@ -108,7 +110,7 @@ export class BitWriter {
         const parts = []
 
         while (n > 0) {
-            const last = this.#parts.pop()
+            const last = this._parts.pop()
 
             if (last) {
                 if (last.length <= n) {
@@ -116,13 +118,13 @@ export class BitWriter {
                     n -= last.length
                 } else {
                     parts.unshift(last.slice(last.length - n))
-                    this.#parts.push(last.slice(0, last.length - n))
+                    this._parts.push(last.slice(0, last.length - n))
                     n = 0
                 }
             }
         }
 
-        this.#n -= n0
+        this._n -= n0
 
         const bits = parts.join("")
 
@@ -141,7 +143,7 @@ export class BitWriter {
     finalize(force = true) {
         this.padToByteBoundary(force)
 
-        let chars = this.#parts.join("")
+        let chars = this._parts.join("")
 
         let bytes = []
 

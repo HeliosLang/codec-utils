@@ -5,21 +5,24 @@ import { maskBits } from "./ops.js"
  */
 export class BitReader {
     /**
+     * @private
      * @type {Uint8Array}
      */
-    #view
+    _view
 
     /**
      * bit position, not byte position
+     * @private
      * @type {number}
      */
-    #pos
+    _pos
 
     /**
      * If true then read last bits as low part of number, if false pad with zero bits (only applies when trying to read more bits than there are left )
+     * @private
      * @type {boolean}
      */
-    #truncate
+    _truncate
 
     /**
      * @param {number[] | Uint8Array} bytes
@@ -27,20 +30,20 @@ export class BitReader {
      */
     constructor(bytes, truncate = true) {
         if (bytes instanceof Uint8Array) {
-            this.#view = bytes
+            this._view = bytes
         } else {
-            this.#view = new Uint8Array(bytes)
+            this._view = new Uint8Array(bytes)
         }
 
-        this.#pos = 0
-        this.#truncate = truncate
+        this._pos = 0
+        this._truncate = truncate
     }
 
     /**
      * @returns {boolean}
      */
     eof() {
-        return Math.trunc(this.#pos / 8) >= this.#view.length
+        return Math.trunc(this._pos / 8) >= this._view.length
     }
 
     /**
@@ -54,10 +57,10 @@ export class BitReader {
         }
 
         let leftShift = 0
-        if (this.#pos + n > this.#view.length * 8) {
-            const newN = this.#view.length * 8 - this.#pos
+        if (this._pos + n > this._view.length * 8) {
+            const newN = this._view.length * 8 - this._pos
 
-            if (!this.#truncate) {
+            if (!this._truncate) {
                 leftShift = n - newN
             }
 
@@ -71,23 +74,23 @@ export class BitReader {
         // it is assumed we don't need to be at the byte boundary
 
         let res = 0
-        let i0 = this.#pos
+        let i0 = this._pos
 
-        for (let i = this.#pos + 1; i <= this.#pos + n; i++) {
+        for (let i = this._pos + 1; i <= this._pos + n; i++) {
             if (i % 8 == 0) {
                 const nPart = i - i0
 
                 res +=
-                    maskBits(this.#view[Math.trunc(i / 8) - 1], i0 % 8, 8) <<
+                    maskBits(this._view[Math.trunc(i / 8) - 1], i0 % 8, 8) <<
                     (n - nPart)
 
                 i0 = i
-            } else if (i == this.#pos + n) {
-                res += maskBits(this.#view[Math.trunc(i / 8)], i0 % 8, i % 8)
+            } else if (i == this._pos + n) {
+                res += maskBits(this._view[Math.trunc(i / 8)], i0 % 8, i % 8)
             }
         }
 
-        this.#pos += n
+        this._pos += n
         return res << leftShift
     }
 
@@ -96,8 +99,8 @@ export class BitReader {
      * @param {boolean} force - if true then move to next byte boundary if already at byte boundary
      */
     moveToByteBoundary(force = false) {
-        if (this.#pos % 8 != 0) {
-            let n = 8 - (this.#pos % 8)
+        if (this._pos % 8 != 0) {
+            let n = 8 - (this._pos % 8)
 
             void this.readBits(n)
         } else if (force) {

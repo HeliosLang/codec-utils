@@ -4,10 +4,10 @@ export class StringWriter {
      * @readonly
      * @type {string[]}
      */
-    parts
+    _parts
 
     constructor() {
-        this.parts = []
+        this._parts = []
     }
 
     /**
@@ -15,7 +15,7 @@ export class StringWriter {
      * @returns {StringWriter}
      */
     write(part) {
-        this.parts.push(part)
+        this._parts.push(part)
         return this
     }
 
@@ -24,7 +24,7 @@ export class StringWriter {
      * @returns {StringWriter}
      */
     writeLine(line) {
-        this.parts.push(`${line}\n`)
+        this._parts.push(`${line}\n`)
         return this
     }
 
@@ -32,6 +32,6 @@ export class StringWriter {
      * @returns {string}
      */
     finalize() {
-        return this.parts.join("")
+        return this._parts.join("")
     }
 }
