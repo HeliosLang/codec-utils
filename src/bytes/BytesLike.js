@@ -1,16 +1,17 @@
 import { hexToBytes } from "./base16.js"
-import { ByteStream } from "./ByteStream.js"
 
 /**
- * @typedef {import("./ByteStream.js").ByteStreamLike} ByteStreamLike
+ * @typedef {import("./ByteStream.js").ByteStreamI} ByteStreamI
+ * @typedef {import("./ByteStream.js").ByteArrayLike} ByteArrayLike
  */
+
 /**
- * @typedef {ByteStreamLike | ByteStream} ByteArrayLike
+ * @typedef {ByteArrayLike | ByteStreamI} BytesLike
  */
 
 /**
  * Permissive conversion to bytes
- * @param {ByteArrayLike} b
+ * @param {BytesLike} b
  * @returns {number[]}
  */
 export function toBytes(b) {
@@ -20,11 +21,13 @@ export function toBytes(b) {
         return hexToBytes(b)
     } else if (typeof b == "object" && "value" in b) {
         return b.value
-    } else if (b instanceof ByteStream) {
+    } else if ("peekRemaining" in b) {
         return b.peekRemaining()
+    } else if (typeof b == "object" && "bytes" in b) {
+        return b.bytes
     } else if (b instanceof Uint8Array) {
         return Array.from(b)
     } else {
-        throw new Error("not ByteArrayLike")
+        throw new Error("not BytesLike")
     }
 }

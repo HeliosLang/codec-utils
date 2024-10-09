@@ -1,9 +1,27 @@
 import { hexToBytes } from "./base16.js"
 
 /**
- * @typedef {string | number[] | {value: number[]} | Uint8Array} ByteStreamLike
+ * @typedef {string | number[] | {value: number[]} | {bytes: number[]} | Uint8Array} ByteArrayLike
  */
 
+/**
+ * @typedef {{
+ *   bytes: Uint8Array
+ *   pos: number
+ *   copy(): ByteStreamI
+ *   isAtEnd(): boolean
+ *   peekOne(): number
+ *   peekMany(n: number): number[]
+ *   peekRemaining(): number[]
+ *   shiftOne(): number
+ *   shiftMany(n: number): number[]
+ *   shiftRemaining(): number[]
+ * }} ByteStreamI
+ */
+
+/**
+ * @implements {ByteStreamI}
+ */
 export class ByteStream {
     /**
      * @private
@@ -19,7 +37,7 @@ export class ByteStream {
 
     /**
      * Not intended for external use
-     * @param {ByteStreamLike} bytes
+     * @param {ByteArrayLike} bytes
      * @param {number} pos
      */
     constructor(bytes, pos = 0) {
@@ -29,6 +47,8 @@ export class ByteStream {
             this._bytes = Uint8Array.from(hexToBytes(bytes))
         } else if (typeof bytes == "object" && "value" in bytes) {
             this._bytes = Uint8Array.from(bytes.value)
+        } else if (typeof bytes == "object" && "bytes" in bytes) {
+            this._bytes = Uint8Array.from(bytes.bytes)
         } else {
             this._bytes = Uint8Array.from(bytes)
         }
@@ -37,15 +57,33 @@ export class ByteStream {
     }
 
     /**
-     * @param {ByteStreamLike | ByteStream} bytes
+     * @param {ByteArrayLike | ByteStreamI} bytes
      * @returns {ByteStream}
      */
     static from(bytes) {
         if (bytes instanceof ByteStream) {
             return bytes
+        } else if (typeof bytes == "string" || Array.isArray(bytes)) {
+            return new ByteStream(bytes)
+        } else if ("pos" in bytes && "bytes" in bytes) {
+            return new ByteStream(bytes.bytes, bytes.pos)
         } else {
             return new ByteStream(bytes)
         }
+    }
+
+    /**
+     * @type {Uint8Array}
+     */
+    get bytes() {
+        return this._bytes
+    }
+
+    /**
+     * @type {number}
+     */
+    get pos() {
+        return this._pos
     }
 
     /**
