@@ -1,6 +1,6 @@
 {
     "name": "@helios-lang/codec-utils",
-    "version": "0.1.36",
+    "version": "0.2.0",
     "description": "Primitive manipulation functions commonly used in encoding and decoding algorithms",
     "main": "src/index.js",
     "types": "types/index.d.ts",
