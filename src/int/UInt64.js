@@ -1,6 +1,22 @@
 /**
+ * @typedef {{
+ *   high: number
+ *   low: number
+ *   add(other: UInt64I): UInt64I
+ *   and(other: UInt64I): UInt64I
+ *   xor(other: UInt64I): UInt64I
+ *   eq(other: UInt64I): boolean
+ *   not(): UInt64I
+ *   rotr(n: number): UInt64I
+ *   shiftr(n: number): UInt64I
+ *   toBytes(littleEndian?: boolean): number[]
+ * }} UInt64I
+ */
+
+/**
  * UInt64 number (represented by 2 UInt32 numbers)
  * If performance is very important: create a first prototype of your algo using this class, and then inline all the operations (eg. how it was done for sha2_512)
+ * @implements {UInt64I}
  */
 export class UInt64 {
     /**
@@ -108,7 +124,7 @@ export class UInt64 {
     }
 
     /**
-     * @param {UInt64} other
+     * @param {UInt64I} other
      * @returns {boolean}
      */
     eq(other) {
@@ -123,7 +139,7 @@ export class UInt64 {
     }
 
     /**
-     * @param {UInt64} other
+     * @param {UInt64I} other
      * @returns {UInt64}
      */
     and(other) {
@@ -131,7 +147,7 @@ export class UInt64 {
     }
 
     /**
-     * @param {UInt64} other
+     * @param {UInt64I} other
      * @returns {UInt64}
      */
     xor(other) {
@@ -142,7 +158,7 @@ export class UInt64 {
     }
 
     /**
-     * @param {UInt64} other
+     * @param {UInt64I} other
      * @returns {UInt64}
      */
     add(other) {

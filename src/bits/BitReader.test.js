@@ -1,9 +1,6 @@
 import { strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
 import { BitReader } from "./BitReader.js"
-
-const moveToByteBoundary = BitReader.prototype.moveToByteBoundary
 
 describe(BitReader.name, () => {
     describe("initialized with [255]", () => {

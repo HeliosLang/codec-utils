@@ -12,6 +12,22 @@ import { BitReader, BitWriter, padBits } from "../bits/index.js"
  * }} Base32Props
  */
 
+/**
+ * @typedef {{
+ *   alphabet: string
+ *   padChar: string
+ *   strict: boolean
+ *   decode(encoded: string): number[]
+ *   decodeRaw(encoded: string): number[]
+ *   encode(bytes: number[]): string
+ *   encodeRaw(bytes: number[]): number[]
+ *   isValid(encoded: string): boolean
+ * }} Base32I
+ */
+
+/**
+ * @implements {Base32I}
+ */
 export class Base32 {
     /**
      * @readonly
@@ -243,7 +259,7 @@ export class Base32 {
     /**
      * Encodes bytes in using Base32.
      * @param {number[]} bytes list of uint8 numbers
-     * @return {string}
+     * @returns {string}
      */
     encode(bytes) {
         const s = this.encodeRaw(bytes)
@@ -262,7 +278,7 @@ export class Base32 {
     /**
      * Decodes a Base32 string into bytes.
      * @param {string} encoded
-     * @return {number[]}
+     * @returns {number[]}
      */
     decode(encoded) {
         const writer = new BitWriter()
@@ -311,7 +327,7 @@ export function isValidBase32(encoded) {
 /**
  * Encodes bytes in using Base32.
  * @param {number[]} bytes list of uint8 numbers
- * @return {string}
+ * @returns {string}
  */
 export function encodeBase32(bytes) {
     return DEFAULT_BASE32_CODEC.encode(bytes)
@@ -320,7 +336,7 @@ export function encodeBase32(bytes) {
 /**
  * Decodes a Base32 string into bytes.
  * @param {string} encoded
- * @return {number[]}
+ * @returns {number[]}
  */
 export function decodeBase32(encoded) {
     return DEFAULT_BASE32_CODEC.decode(encoded)

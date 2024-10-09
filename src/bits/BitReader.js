@@ -1,7 +1,17 @@
 import { maskBits } from "./ops.js"
 
 /**
+ * @typedef {{
+ *   eof(): boolean
+ *   moveToByteBoundary(force?: boolean): void
+ *   readBits(n: number): number
+ *   readByte(): number
+ * }} BitReaderI
+ */
+
+/**
  * Read non-byte aligned numbers
+ * @implements {BitReaderI}
  */
 export class BitReader {
     /**
@@ -44,6 +54,20 @@ export class BitReader {
      */
     eof() {
         return Math.trunc(this._pos / 8) >= this._view.length
+    }
+
+    /**
+     * Moves position to next byte boundary
+     * @param {boolean} force - if true then move to next byte boundary if already at byte boundary
+     */
+    moveToByteBoundary(force = false) {
+        if (this._pos % 8 != 0) {
+            let n = 8 - (this._pos % 8)
+
+            void this.readBits(n)
+        } else if (force) {
+            this.readBits(8)
+        }
     }
 
     /**
@@ -92,20 +116,6 @@ export class BitReader {
 
         this._pos += n
         return res << leftShift
-    }
-
-    /**
-     * Moves position to next byte boundary
-     * @param {boolean} force - if true then move to next byte boundary if already at byte boundary
-     */
-    moveToByteBoundary(force = false) {
-        if (this._pos % 8 != 0) {
-            let n = 8 - (this._pos % 8)
-
-            void this.readBits(n)
-        } else if (force) {
-            this.readBits(8)
-        }
     }
 
     /**

@@ -34,7 +34,7 @@ export function encodeIntBE(x) {
 /**
  * Converts a list of big endian uint8 numbers into an unbounded int
  * @param {number[] | Uint8Array} bytes
- * @return {bigint}
+ * @returns {bigint}
  */
 export function decodeIntBE(bytes) {
     if (bytes.length == 0) {

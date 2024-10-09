@@ -1,3 +1,14 @@
+/**
+ * @typedef {{
+ *   finalize(): string
+ *   write(part: string): StringWriterI
+ *   writeLine(line: string): StringWriterI
+ * }} StringWriterI
+ */
+
+/**
+ * @implements {StringWriterI}
+ */
 export class StringWriter {
     /**
      * @private
@@ -8,6 +19,13 @@ export class StringWriter {
 
     constructor() {
         this._parts = []
+    }
+
+    /**
+     * @returns {string}
+     */
+    finalize() {
+        return this._parts.join("")
     }
 
     /**
@@ -26,12 +44,5 @@ export class StringWriter {
     writeLine(line) {
         this._parts.push(`${line}\n`)
         return this
-    }
-
-    /**
-     * @returns {string}
-     */
-    finalize() {
-        return this._parts.join("")
     }
 }

@@ -6,12 +6,13 @@
     "types": "types/index.d.ts",
     "type": "module",
     "scripts": {
-        "build": "pnpm run prettify && pnpm run build:types && pnpm run test:suite",
+        "build": "pnpm run prettify && pnpm run lint && pnpm run build:types && pnpm run test:suite",
         "build:types": "tsc -p jsconfig.json --noEmit false --emitDeclarationOnly",
+        "lint": "eslint .",
         "lockfile:sync": "pnpm install --ignore-workspace ; rm -rf node_modules ;  pnpm install",
         "prepack": "pnpm run build",
         "prettify": "prettier . --write",
-        "test": "pnpm run test:pretty && pnpm run test:types && pnpm run test:suite",
+        "test": "pnpm run test:pretty && pnpm run lint && pnpm run test:types && pnpm run test:suite",
         "test:pretty": "prettier . --check",
         "test:suite": "node --test --experimental-test-coverage",
         "test:types": "pnpm run build:types"
@@ -25,8 +26,12 @@
         "singleQuote": false
     },
     "devDependencies": {
-        "@types/node": "^20.10.0",
+        "@types/node": "^22.7.5",
+        "@types/punycode": "^2.1.4",
+        "@typescript-eslint/eslint-plugin": "^8.8.1",
+        "eslint": "^9.12.0",
+        "eslint-plugin-jsdoc": "^50.3.1",
         "prettier": "^3.3.3",
-        "typescript": "^5.3.2"
+        "typescript": "^5.4.2"
     }
 }

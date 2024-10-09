@@ -12,6 +12,22 @@ import { BitReader, BitWriter, padBits } from "../bits/index.js"
  * }} Base64Props
  */
 
+/**
+ * @typedef {{
+ *   alphabet: string
+ *   padChar: string
+ *   strict: boolean
+ *   decode(encoded: string): number[]
+ *   decodeRaw(encoded: string): number[]
+ *   encode(bytes: number[]): string
+ *   encodeRaw(bytes: number[]): number[]
+ *   isValid(encoded: string): boolean
+ * }} Base64I
+ */
+
+/**
+ * @implements {Base64I}
+ */
 export class Base64 {
     /**
      * @readonly
@@ -95,6 +111,7 @@ export class Base64 {
     /**
      * Checks if base64 encoding is valid.
      * @param {string} encoded
+     * @returns {boolean}
      */
     isValid(encoded) {
         let n = encoded.length

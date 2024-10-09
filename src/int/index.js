@@ -7,4 +7,5 @@ export { decodeZigZag, encodeZigZag } from "./zigzag.js"
 
 /**
  * @typedef {import("./IntLike.js").IntLike} IntLike
+ * @typedef {import("./UInt64.js").UInt64I} UInt64I
  */

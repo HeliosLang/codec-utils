@@ -12,6 +12,8 @@ export {
 } from "./ops.js"
 
 /**
+ * @typedef {import("./base32.js").Base32I} Base32I
+ * @typedef {import("./base64.js").Base64I} Base64I
  * @typedef {import("./BytesLike.js").BytesLike} BytesLike
  * @typedef {import("./ByteStream.js").ByteStreamI} ByteStreamI
  */

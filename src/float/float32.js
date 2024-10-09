@@ -1,6 +1,7 @@
 /**
  * Leverages the builtin DataView class to decode a IEEE 754 float32 number
  * @param {number[]} bytes
+ * @returns {number}
  */
 export function decodeFloat32(bytes) {
     if (bytes.length != 4) {

@@ -37,7 +37,7 @@ describe(decodeIntLE.name, () => {
 describe(`${decodeIntLE.name} compared to alt formula`, () => {
     /**
      * @param {number[]} bytes
-     * @returns {BigInt}
+     * @returns {bigint}
      */
     const alt = (bytes) => {
         let sum = 0n

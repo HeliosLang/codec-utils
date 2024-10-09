@@ -53,6 +53,7 @@ export function equalsBytes(a, b) {
  * If `n < nCurrent`, pad to next multiple of `n`.
  * @param {number[]} bytes
  * @param {number} n
+ * @returns {number[]}
  */
 export function padBytes(bytes, n) {
     const nBytes = bytes.length
@@ -76,6 +77,7 @@ export function padBytes(bytes, n) {
  * Throws an error if bytes.length > n
  * @param {number[]} bytes
  * @param {number} n
+ * @returns {number[]}
  */
 export function prepadBytes(bytes, n) {
     const nBytes = bytes.length

@@ -1,8 +1,20 @@
 import { padBits } from "./ops.js"
 
 /**
+ * @typedef {{
+ *   length: number
+ *   finalize(force?: boolean): number[]
+ *   padToByteBoundary(force?: boolean): void
+ *   pop(n: number): string
+ *   writeBits(bitChars: string): BitWriterI
+ *   writeByte(byte: number): BitWriterI
+ * }} BitWriterI
+ */
+
+/**
  * BitWriter turns a string of '0's and '1's into a list of bytes.
  * Finalization pads the bits using '0*1' if not yet aligned with the byte boundary.
+ * @implements {BitWriterI}
  */
 export class BitWriter {
     /**
@@ -32,39 +44,25 @@ export class BitWriter {
     }
 
     /**
-     * Write a string of '0's and '1's to the BitWriter.
-     * Returns the BitWriter to enable chaining
-     * @param {string} bitChars
-     * @returns {BitWriter}
+     * Pads the BitWriter to align with the byte boundary and returns the resulting bytes.
+     * @param {boolean} force - force padding (will add one byte if already aligned)
+     * @returns {number[]}
      */
-    writeBits(bitChars) {
-        for (let c of bitChars) {
-            if (c != "0" && c != "1") {
-                throw new Error(
-                    `bit string contains invalid chars: ${bitChars}`
-                )
-            }
+    finalize(force = true) {
+        this.padToByteBoundary(force)
+
+        let chars = this._parts.join("")
+
+        let bytes = []
+
+        for (let i = 0; i < chars.length; i += 8) {
+            let byteChars = chars.slice(i, i + 8)
+            let byte = parseInt(byteChars, 2)
+
+            bytes.push(byte)
         }
 
-        this._parts.push(bitChars)
-        this._n += bitChars.length
-
-        return this
-    }
-
-    /**
-     * Returns the BitWriter to enable chaining
-     * @param {number} byte
-     * @returns {BitWriter}
-     */
-    writeByte(byte) {
-        if (byte < 0 || byte > 255) {
-            throw new Error("invalid byte")
-        }
-
-        this.writeBits(padBits(byte.toString(2), 8))
-
-        return this
+        return bytes
     }
 
     /**
@@ -136,24 +134,38 @@ export class BitWriter {
     }
 
     /**
-     * Pads the BitWriter to align with the byte boundary and returns the resulting bytes.
-     * @param {boolean} force - force padding (will add one byte if already aligned)
-     * @returns {number[]}
+     * Write a string of '0's and '1's to the BitWriter.
+     * Returns the BitWriter to enable chaining
+     * @param {string} bitChars
+     * @returns {BitWriter}
      */
-    finalize(force = true) {
-        this.padToByteBoundary(force)
-
-        let chars = this._parts.join("")
-
-        let bytes = []
-
-        for (let i = 0; i < chars.length; i += 8) {
-            let byteChars = chars.slice(i, i + 8)
-            let byte = parseInt(byteChars, 2)
-
-            bytes.push(byte)
+    writeBits(bitChars) {
+        for (let c of bitChars) {
+            if (c != "0" && c != "1") {
+                throw new Error(
+                    `bit string contains invalid chars: ${bitChars}`
+                )
+            }
         }
 
-        return bytes
+        this._parts.push(bitChars)
+        this._n += bitChars.length
+
+        return this
+    }
+
+    /**
+     * Returns the BitWriter to enable chaining
+     * @param {number} byte
+     * @returns {BitWriter}
+     */
+    writeByte(byte) {
+        if (byte < 0 || byte > 255) {
+            throw new Error("invalid byte")
+        }
+
+        this.writeBits(padBits(byte.toString(2), 8))
+
+        return this
     }
 }
