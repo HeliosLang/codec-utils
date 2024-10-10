@@ -21,10 +21,12 @@ export default [
             "jsdoc/require-param": "error",
             "jsdoc/require-returns": "error",
             "jsdoc/check-types": "error",
+            "no-unused-vars": "off",
             "@typescript-eslint/no-unused-vars": [
                 "error",
                 {
                     argsIgnorePattern: "^_",
+                    varsIgnorePattern: "^_",
                     caughtErrors: "none"
                 }
             ],
