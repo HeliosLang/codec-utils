@@ -21,7 +21,7 @@ import { toUint8Array } from "./ByteArrayLike.js"
 
 /**
  * @param {{
- *   bytes: ByteStream
+ *   bytes: ByteStream | ByteArrayLike
  * } | {
  *   bytes: ByteArrayLike
  *   pos?: number

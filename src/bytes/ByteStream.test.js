@@ -2,6 +2,10 @@ import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
 import { makeByteStream } from "./ByteStream.js"
 
+/**
+ * @typedef {import("./BytesLike.js").BytesLike} BytesLike
+ */
+
 describe(`ByteStream`, () => {
     describe("initialized with [255]", () => {
         it("returns 255 when peeking a single byte", () => {
@@ -140,5 +144,16 @@ describe(`ByteStream`, () => {
 
             strictEqual(bs.isAtEnd(), false)
         })
+    })
+})
+
+describe("typecheck of makeByteStream", () => {
+    it("must be able to pass BytesLike to makeByteStream", () => {
+        /**
+         * @type {BytesLike}
+         */
+        const bytes = /** @type {any} */ ([])
+
+        makeByteStream({ bytes })
     })
 })
