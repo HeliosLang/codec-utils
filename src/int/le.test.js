@@ -1,8 +1,7 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
+import { hexToBytes } from "../bytes/index.js"
 import { decodeIntLE, encodeIntLE32 } from "./le.js"
-import { hexToBytes } from "../index.js"
 
 describe(decodeIntLE.name, () => {
     it("returns 65792 for [0, 1, 1, 0, ....]", () => {

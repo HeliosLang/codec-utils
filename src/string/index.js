@@ -1,7 +1,7 @@
+export { makeStringWriter } from "./StringWriter.js"
 export { decodeUtf8, encodeUtf8, isValidUtf8 } from "./utf8.js"
 export { removeWhitespace, replaceTabs } from "./whitespace.js"
-export { StringWriter } from "./StringWriter.js"
 
 /**
- * @typedef {import("./StringWriter.js").StringWriterI} StringWriterI
+ * @typedef {import("./StringWriter.js").StringWriter} StringWriter
  */

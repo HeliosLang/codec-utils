@@ -1,51 +1,54 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
 import { encodeUtf8 } from "../string/index.js"
-import { Base32, decodeBase32, encodeBase32, isValidBase32 } from "./base32.js"
+import {
+    decodeBase32,
+    encodeBase32,
+    isValidBase32,
+    makeBase32,
+    BASE32_DEFAULT_ALPHABET,
+    BASE32_DEFAULT_PROPS
+} from "./base32.js"
 
 /**
  * Some test vectors taken from https://chromium.googlesource.com/chromium/src/+/lkgr/components/base32/base32_unittest.cc
  */
 
-describe(`${Base32.name} constructor`, () => {
+describe(`makeBase32()`, () => {
     it("fails for non-32 char alphabet", () => {
-        throws(() => new Base32({ alphabet: "abcdefg" }))
+        throws(() => makeBase32({ alphabet: "abcdefg" }))
     })
 
     it("fails for non-unique 32 char alphabet", () => {
-        throws(
-            () => new Base32({ alphabet: "aacdefghijklmnopqrstuvwxyz234567" })
+        throws(() =>
+            makeBase32({ alphabet: "aacdefghijklmnopqrstuvwxyz234567" })
         )
     })
 
     it("fails for non-single char padding (0 chars)", () => {
-        throws(
-            () =>
-                new Base32({
-                    alphabet: Base32.DEFAULT_ALPHABET,
-                    padChar: ""
-                })
+        throws(() =>
+            makeBase32({
+                alphabet: BASE32_DEFAULT_ALPHABET,
+                padChar: ""
+            })
         )
     })
 
     it("fails for non-single char padding (more than 1 chars)", () => {
-        throws(
-            () =>
-                new Base32({
-                    alphabet: Base32.DEFAULT_ALPHABET,
-                    padChar: "=="
-                })
+        throws(() =>
+            makeBase32({
+                alphabet: BASE32_DEFAULT_ALPHABET,
+                padChar: "=="
+            })
         )
     })
 
     it("fails if padding char is part of alphabet", () => {
-        throws(
-            () =>
-                new Base32({
-                    alphabet: "abcdefghijklmnopqrstuvwxyz23456=",
-                    padChar: "="
-                })
+        throws(() =>
+            makeBase32({
+                alphabet: "abcdefghijklmnopqrstuvwxyz23456=",
+                padChar: "="
+            })
         )
     })
 })
@@ -85,7 +88,7 @@ describe(isValidBase32.name, () => {
 })
 
 describe(`${encodeBase32.name} without padding`, () => {
-    const codec = new Base32({})
+    const codec = makeBase32({})
 
     it("returns an empty string for []", () => {
         strictEqual(codec.encode([]), "")
@@ -117,10 +120,9 @@ describe(`${encodeBase32.name} without padding`, () => {
 })
 
 describe(decodeBase32.name, () => {
-    const paddingLessCodec = new Base32({ alphabet: Base32.DEFAULT_ALPHABET })
-    const paddingCodec = new Base32({
-        alphabet: Base32.DEFAULT_ALPHABET,
-        padChar: Base32.DEFAULT_PAD_CHAR,
+    const paddingLessCodec = makeBase32({ alphabet: BASE32_DEFAULT_ALPHABET })
+    const paddingCodec = makeBase32({
+        ...BASE32_DEFAULT_PROPS,
         strict: true
     })
 

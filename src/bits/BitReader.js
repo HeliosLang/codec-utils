@@ -1,19 +1,31 @@
 import { maskBits } from "./ops.js"
 
 /**
+ * Read non-byte aligned numbers
  * @typedef {{
  *   eof(): boolean
  *   moveToByteBoundary(force?: boolean): void
  *   readBits(n: number): number
  *   readByte(): number
- * }} BitReaderI
+ * }} BitReader
  */
 
 /**
- * Read non-byte aligned numbers
- * @implements {BitReaderI}
+ * `truncate` defaults to true
+ * @param {{
+ *   bytes: number[] | Uint8Array
+ *   truncate?: boolean
+ * }} args
+ * @returns {BitReader}
  */
-export class BitReader {
+export function makeBitReader(args) {
+    return new BitReaderImpl(args.bytes, args.truncate ?? true)
+}
+
+/**
+ * @implements {BitReader}
+ */
+class BitReaderImpl {
     /**
      * @private
      * @type {Uint8Array}

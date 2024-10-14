@@ -1,8 +1,8 @@
-export { BitReader } from "./BitReader.js"
-export { BitWriter } from "./BitWriter.js"
+export { makeBitReader } from "./BitReader.js"
+export { makeBitWriter } from "./BitWriter.js"
 export { byteToBits, getBit, maskBits, padBits } from "./ops.js"
 
 /**
- * @typedef {import("./BitReader.js").BitReaderI} BitReaderI
- * @typedef {import("./BitWriter.js").BitWriterI} BitWriterI
+ * @typedef {import("./BitReader.js").BitReader} BitReader
+ * @typedef {import("./BitWriter.js").BitWriter} BitWriter
  */

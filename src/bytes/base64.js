@@ -1,4 +1,17 @@
-import { BitReader, BitWriter, padBits } from "../bits/index.js"
+import { makeBitReader, makeBitWriter, padBits } from "../bits/index.js"
+
+/**
+ * @typedef {{
+ *   alphabet: string
+ *   padChar: string
+ *   strict: boolean
+ *   decode(encoded: string): number[]
+ *   decodeRaw(encoded: string): number[]
+ *   encode(bytes: number[]): string
+ *   encodeRaw(bytes: number[]): number[]
+ *   isValid(encoded: string): boolean
+ * }} Base64
+ */
 
 /**
  * In the first case the encoding operates without padding (and encoded strings with padding are invalid)
@@ -13,22 +26,64 @@ import { BitReader, BitWriter, padBits } from "../bits/index.js"
  */
 
 /**
- * @typedef {{
- *   alphabet: string
- *   padChar: string
- *   strict: boolean
- *   decode(encoded: string): number[]
- *   decodeRaw(encoded: string): number[]
- *   encode(bytes: number[]): string
- *   encodeRaw(bytes: number[]): number[]
- *   isValid(encoded: string): boolean
- * }} Base64I
+ * Rfc 4648
+ * @type {string}
  */
+export const BASE64_DEFAULT_ALPHABET =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
 /**
- * @implements {Base64I}
+ * Rfc 4648
+ * @type {string}
  */
-export class Base64 {
+export const BASE64_DEFAULT_PAD_CHAR = "="
+
+/**
+ * Rfc 4648
+ * @type {Base64Props}
+ */
+export const BASE64_DEFAULT_PROPS = {
+    alphabet: BASE64_DEFAULT_ALPHABET,
+    padChar: BASE64_DEFAULT_PAD_CHAR,
+    strict: false
+}
+
+/**
+ * @param {Base64Props} props
+ * @returns {Base64}
+ */
+export function makeBase64(props = BASE64_DEFAULT_PROPS) {
+    const alphabet = props.alphabet ?? BASE64_DEFAULT_ALPHABET
+    const padChar = "padChar" in props ? props.padChar : ""
+    const strict = "strict" in props ? (props.strict ?? false) : false
+
+    if (alphabet.length != 64) {
+        throw new Error(
+            `expected base64 alphabet with 64 characters, got ${alphabet.length} characters`
+        )
+    }
+
+    if (new Set(alphabet.split("")).size != 64) {
+        throw new Error(
+            "invalid base64 alphabet, doesn't consist of 64 unique characters"
+        )
+    }
+
+    if ("padChar" in props && padChar.length != 1) {
+        throw new Error("base64 padChar can only be one character")
+    }
+
+    if ("padChar" in props && alphabet.indexOf(padChar) != -1) {
+        throw new Error("base64 padChar can't be part of alphabet")
+    }
+
+    return new Base64Impl(alphabet, padChar, strict)
+}
+
+/**
+ * @implements {Base64}
+ */
+class Base64Impl {
     /**
      * @readonly
      * @type {string}
@@ -48,64 +103,14 @@ export class Base64 {
     strict
 
     /**
-     * @param {Base64Props} props
+     * @param {string} alphabet
+     * @param {string} padChar
+     * @param {boolean} strict
      */
-    constructor(props = Base64.DEFAULT_PROPS) {
-        const alphabet = props.alphabet ?? Base64.DEFAULT_ALPHABET
-        const padChar = "padChar" in props ? props.padChar : ""
-        const strict = "strict" in props ? (props.strict ?? false) : false
-
-        if (alphabet.length != 64) {
-            throw new Error(
-                `expected base64 alphabet with 64 characters, got ${alphabet.length} characters`
-            )
-        }
-
-        if (new Set(alphabet.split("")).size != 64) {
-            throw new Error(
-                "invalid base64 alphabet, doesn't consist of 64 unique characters"
-            )
-        }
-
-        if ("padChar" in props && padChar.length != 1) {
-            throw new Error("base64 padChar can only be one character")
-        }
-
-        if ("padChar" in props && alphabet.indexOf(padChar) != -1) {
-            throw new Error("base64 padChar can't be part of alphabet")
-        }
-
+    constructor(alphabet, padChar, strict) {
         this.alphabet = alphabet
         this.padChar = padChar
         this.strict = strict
-    }
-
-    /**
-     * Rfc 4648
-     * @type {string}
-     */
-    static get DEFAULT_ALPHABET() {
-        return "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-    }
-
-    /**
-     * Rfc 4648
-     * @type {string}
-     */
-    static get DEFAULT_PAD_CHAR() {
-        return "="
-    }
-
-    /**
-     * Rfc 4648
-     * @type {Base64Props}
-     */
-    static get DEFAULT_PROPS() {
-        return {
-            alphabet: Base64.DEFAULT_ALPHABET,
-            padChar: Base64.DEFAULT_PAD_CHAR,
-            strict: false
-        }
     }
 
     /**
@@ -165,7 +170,7 @@ export class Base64 {
     encodeRaw(bytes) {
         const result = []
 
-        const reader = new BitReader(bytes, false)
+        const reader = makeBitReader({ bytes, truncate: false })
 
         while (!reader.eof()) {
             result.push(reader.readBits(6))
@@ -252,7 +257,7 @@ export class Base64 {
      * @returns {number[]}
      */
     decode(encoded) {
-        const writer = new BitWriter()
+        const writer = makeBitWriter()
 
         const raw = this.decodeRaw(encoded)
 
@@ -299,9 +304,9 @@ export class Base64 {
 }
 
 /**
- * Not exported. Use `new Base64()` instead
+ * Not exported. Use `makeBase64()` directly instead
  */
-const DEFAULT_BASE64_CODEC = new Base64()
+const DEFAULT_BASE64_CODEC = makeBase64()
 
 /**
  * Checks if base64 encoding is correct.

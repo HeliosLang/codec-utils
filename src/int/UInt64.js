@@ -1,49 +1,39 @@
 /**
+ * UInt64 number (represented by 2 UInt32 numbers)
+ * If performance is very important: create an initial prototype of your algorithm using this class, and then inline all the operations (eg. how it was done for sha2_512)
  * @typedef {{
  *   high: number
  *   low: number
- *   add(other: UInt64I): UInt64I
- *   and(other: UInt64I): UInt64I
- *   xor(other: UInt64I): UInt64I
- *   eq(other: UInt64I): boolean
- *   not(): UInt64I
- *   rotr(n: number): UInt64I
- *   shiftr(n: number): UInt64I
+ *   add(other: UInt64): UInt64
+ *   and(other: UInt64): UInt64
+ *   xor(other: UInt64): UInt64
+ *   eq(other: UInt64): boolean
+ *   not(): UInt64
+ *   rotr(n: number): UInt64
+ *   shiftr(n: number): UInt64
  *   toBytes(littleEndian?: boolean): number[]
- * }} UInt64I
+ * }} UInt64
  */
 
 /**
- * UInt64 number (represented by 2 UInt32 numbers)
- * If performance is very important: create a first prototype of your algo using this class, and then inline all the operations (eg. how it was done for sha2_512)
- * @implements {UInt64I}
+ * @param {{
+ *   high: number
+ *   low: number
+ * } | {
+ *   bytes: number[]
+ *   littleEndian?: boolean // defaults to true
+ * } | {
+ *   hex: string
+ * }} args
+ * @returns {UInt64}
  */
-export class UInt64 {
-    /**
-     * @type {number}
-     */
-    high
+export function makeUInt64(args) {
+    if ("high" in args) {
+        return new UInt64Impl(args.high, args.low)
+    } else if ("bytes" in args) {
+        const bytes = args.bytes
+        const littleEndian = args.littleEndian ?? true
 
-    /**
-     * @type {number}
-     */
-    low
-
-    /**
-     * @param {number} high  - uint32 number
-     * @param {number} low - uint32 number
-     */
-    constructor(high, low) {
-        this.high = high
-        this.low = low
-    }
-
-    /**
-     * @param {number[]} bytes - 8 uint8 numbers
-     * @param {boolean} littleEndian
-     * @returns {UInt64}
-     */
-    static fromBytes(bytes, littleEndian = true) {
         /**
          * @type {number}
          */
@@ -78,25 +68,50 @@ export class UInt64 {
                 (bytes[7] << 0)
         }
 
-        return new UInt64(high >>> 0, low >>> 0)
+        return new UInt64Impl(high >>> 0, low >>> 0)
+    } else if ("hex" in args) {
+        const hex = args.hex
+
+        const high = parseInt(hex.slice(0, 8), 16)
+        const low = parseInt(hex.slice(8, 16), 16)
+
+        return new UInt64Impl(high >>> 0, low >>> 0)
+    } else {
+        throw new Error("invalid makeUInt64() arguments")
     }
+}
+
+/**
+ * Skips the overload-handling overhead of makeUInt64()
+ * @param {number} high
+ * @param {number} low
+ * @returns {UInt64}
+ */
+export function makeUInt64Fast(high, low) {
+    return new UInt64Impl(high, low)
+}
+
+/**
+ * @implements {UInt64}
+ */
+class UInt64Impl {
+    /**
+     * @type {number}
+     */
+    high
 
     /**
-     * @param {string} str
-     * @returns {UInt64}
+     * @type {number}
      */
-    static fromString(str) {
-        const high = parseInt(str.slice(0, 8), 16)
-        const low = parseInt(str.slice(8, 16), 16)
-
-        return new UInt64(high >>> 0, low >>> 0)
-    }
+    low
 
     /**
-     * @returns {UInt64}
+     * @param {number} high  - uint32 number
+     * @param {number} low - uint32 number
      */
-    static zero() {
-        return new UInt64(0, 0)
+    constructor(high, low) {
+        this.high = high
+        this.low = low
     }
 
     /**
@@ -124,7 +139,7 @@ export class UInt64 {
     }
 
     /**
-     * @param {UInt64I} other
+     * @param {UInt64} other
      * @returns {boolean}
      */
     eq(other) {
@@ -135,30 +150,30 @@ export class UInt64 {
      * @returns {UInt64}
      */
     not() {
-        return new UInt64(~this.high, ~this.low)
+        return new UInt64Impl(~this.high, ~this.low)
     }
 
     /**
-     * @param {UInt64I} other
+     * @param {UInt64} other
      * @returns {UInt64}
      */
     and(other) {
-        return new UInt64(this.high & other.high, this.low & other.low)
+        return new UInt64Impl(this.high & other.high, this.low & other.low)
     }
 
     /**
-     * @param {UInt64I} other
+     * @param {UInt64} other
      * @returns {UInt64}
      */
     xor(other) {
-        return new UInt64(
+        return new UInt64Impl(
             (this.high ^ other.high) >>> 0,
             (this.low ^ other.low) >>> 0
         )
     }
 
     /**
-     * @param {UInt64I} other
+     * @param {UInt64} other
      * @returns {UInt64}
      */
     add(other) {
@@ -169,7 +184,7 @@ export class UInt64 {
             high += 1
         }
 
-        return new UInt64(high >>> 0, low >>> 0)
+        return new UInt64Impl(high >>> 0, low >>> 0)
     }
 
     /**
@@ -181,13 +196,13 @@ export class UInt64 {
         let l = this.low
 
         if (n == 32) {
-            return new UInt64(l, h)
+            return new UInt64Impl(l, h)
         } else if (n > 32) {
             n -= 32
             ;[h, l] = [l, h]
         }
 
-        return new UInt64(
+        return new UInt64Impl(
             ((h >>> n) | (l << (32 - n))) >>> 0,
             ((l >>> n) | (h << (32 - n))) >>> 0
         )
@@ -199,12 +214,17 @@ export class UInt64 {
      */
     shiftr(n) {
         if (n >= 32) {
-            return new UInt64(0, this.high >>> (n - 32))
+            return new UInt64Impl(0, this.high >>> (n - 32))
         } else {
-            return new UInt64(
+            return new UInt64Impl(
                 this.high >>> n,
                 ((this.low >>> n) | (this.high << (32 - n))) >>> 0
             )
         }
     }
 }
+
+/**
+ * @type {UInt64}
+ */
+export const UINT64_ZERO = new UInt64Impl(0, 0)

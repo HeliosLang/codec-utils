@@ -1,18 +1,7 @@
 import { strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
 import { decodeZigZag, encodeZigZag } from "./zigzag.js"
 
-/* (new UplcInt(Site.dummy(), -1n, true)).toUnsigned().int == 1n
- * @example
- * (new UplcInt(Site.dummy(), -1n, true)).toUnsigned().toSigned().int == -1n
- * @example
- * (new UplcInt(Site.dummy(), -2n, true)).toUnsigned().toSigned().int == -2n
- * @example
- * (new UplcInt(Site.dummy(), -3n, true)).toUnsigned().toSigned().int == -3n
- * @example
- * (new UplcInt(Site.dummy(), -4n, true)).toUnsigned().toSigned().int == -4n
- */
 describe(encodeZigZag.name, () => {
     it("returns 0n for 0", () => {
         strictEqual(encodeZigZag(0), 0n)

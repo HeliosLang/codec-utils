@@ -1,60 +1,61 @@
-import { describe, it } from "node:test"
-import { UInt64 } from "./UInt64.js"
 import { deepEqual, strictEqual } from "node:assert"
+import { describe, it } from "node:test"
+import { UINT64_ZERO, makeUInt64 } from "./UInt64.js"
 
-describe(UInt64.name, () => {
-    describe(UInt64.prototype.toBytes.name, () => {
+describe("UInt64", () => {
+    describe("toBytes()", () => {
         it(`roundtrip returns the same for [0, 1, 2, 3, 4, 5, 6, 7] if littleEndian==true`, () => {
             deepEqual(
-                UInt64.fromBytes([0, 1, 2, 3, 4, 5, 6, 7]).toBytes(true),
+                makeUInt64({ bytes: [0, 1, 2, 3, 4, 5, 6, 7] }).toBytes(true),
                 [0, 1, 2, 3, 4, 5, 6, 7]
             )
         })
 
         it(`roundtrip returns the same for [0, 1, 2, 3, 4, 5, 6, 7] if littleEndian==false`, () => {
             deepEqual(
-                UInt64.fromBytes([0, 1, 2, 3, 4, 5, 6, 7], false).toBytes(
-                    false
-                ),
+                makeUInt64({
+                    bytes: [0, 1, 2, 3, 4, 5, 6, 7],
+                    littleEndian: false
+                }).toBytes(false),
                 [0, 1, 2, 3, 4, 5, 6, 7]
             )
         })
     })
 
-    describe(UInt64.fromString.name, () => {
+    describe("makeUInt64({hex})", () => {
         it(`returns [0, 0, 0, 0, 255, 255, 255, 255] for "00000000ffffffff"`, () => {
             deepEqual(
-                UInt64.fromString("00000000ffffffff").toBytes(false),
+                makeUInt64({ hex: "00000000ffffffff" }).toBytes(false),
                 [0, 0, 0, 0, 255, 255, 255, 255]
             )
         })
     })
 
-    describe(UInt64.zero.name, () => {
+    describe("UInt64 zero", () => {
         it(`returns [0, 0, 0, 0, 0, 0, 0, 0]`, () => {
-            deepEqual(UInt64.zero().toBytes(false), [0, 0, 0, 0, 0, 0, 0, 0])
+            deepEqual(UINT64_ZERO.toBytes(false), [0, 0, 0, 0, 0, 0, 0, 0])
         })
     })
 
-    describe(UInt64.prototype.eq.name, () => {
+    describe("eq()", () => {
         it(`returns true for UInt64.zero() && UInt64.zero()`, () => {
-            strictEqual(UInt64.zero().eq(UInt64.zero()), true)
+            strictEqual(UINT64_ZERO.eq(UINT64_ZERO), true)
         })
 
         it(`returns false for UInt64.zero() && UInt64.fromBytes([0, 0, 0, 0, 255, 255, 255, 255])`, () => {
             strictEqual(
-                UInt64.zero().eq(
-                    UInt64.fromBytes([0, 0, 0, 0, 255, 255, 255, 255])
+                UINT64_ZERO.eq(
+                    makeUInt64({ bytes: [0, 0, 0, 0, 255, 255, 255, 255] })
                 ),
                 false
             )
         })
     })
 
-    describe(UInt64.prototype.not.name, () => {
+    describe("not()", () => {
         it(`returns [255, 255, 255, 255, 255, 255, 255, 255] for UInt64.zero().not()`, () => {
             deepEqual(
-                UInt64.zero().not().toBytes(),
+                UINT64_ZERO.not().toBytes(),
                 [255, 255, 255, 255, 255, 255, 255, 255]
             )
         })

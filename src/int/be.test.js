@@ -1,8 +1,7 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
+import { hexToBytes } from "../bytes/index.js"
 import { decodeIntBE, encodeIntBE } from "./be.js"
-import { hexToBytes } from "../index.js"
 
 describe(decodeIntBE.name, () => {
     it("returns 255n for [255]", () => {

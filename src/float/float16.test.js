@@ -1,5 +1,5 @@
-import { describe, it } from "node:test"
 import { deepEqual, strictEqual, throws } from "node:assert"
+import { describe, it } from "node:test"
 import { bytesToHex } from "../bytes/base16.js"
 import { decodeFloat16, encodeFloat16 } from "./float16.js"
 

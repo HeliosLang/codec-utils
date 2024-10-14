@@ -88,7 +88,7 @@ export function prepadBytes(bytes, n) {
         throw new Error(`invalid prepad length (must be > 0, got ${n})`)
     } else if (nBytes > n) {
         throw new Error(
-            `padding length smaller than bytes length (${n} < ${nBytes})`
+            `padding goal length smaller than bytes length (${n} < ${nBytes})`
         )
     } else {
         const nPad = n - nBytes

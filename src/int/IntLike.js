@@ -1,5 +1,3 @@
-export {}
-
 /**
  * @typedef {number | bigint} IntLike
  */

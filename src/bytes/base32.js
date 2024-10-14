@@ -1,4 +1,17 @@
-import { BitReader, BitWriter, padBits } from "../bits/index.js"
+import { makeBitReader, makeBitWriter, padBits } from "../bits/index.js"
+
+/**
+ * @typedef {{
+ *   alphabet: string
+ *   padChar: string
+ *   strict: boolean
+ *   decode(encoded: string): number[]
+ *   decodeRaw(encoded: string): number[]
+ *   encode(bytes: number[]): string
+ *   encodeRaw(bytes: number[]): number[]
+ *   isValid(encoded: string): boolean
+ * }} Base32
+ */
 
 /**
  * In the first case the encoding operates without padding (and encoded strings with padding are invalid)
@@ -12,23 +25,56 @@ import { BitReader, BitWriter, padBits } from "../bits/index.js"
  * }} Base32Props
  */
 
-/**
- * @typedef {{
- *   alphabet: string
- *   padChar: string
- *   strict: boolean
- *   decode(encoded: string): number[]
- *   decodeRaw(encoded: string): number[]
- *   encode(bytes: number[]): string
- *   encodeRaw(bytes: number[]): number[]
- *   isValid(encoded: string): boolean
- * }} Base32I
- */
+export const BASE32_DEFAULT_ALPHABET = "abcdefghijklmnopqrstuvwxyz234567"
+
+export const BASE32_DEFAULT_PAD_CHAR = "="
 
 /**
- * @implements {Base32I}
+ * Rfc 4648
+ * @type {Base32Props}
  */
-export class Base32 {
+export const BASE32_DEFAULT_PROPS = {
+    alphabet: BASE32_DEFAULT_ALPHABET,
+    padChar: BASE32_DEFAULT_PAD_CHAR,
+    strict: false
+}
+
+/**
+ * @param {Base32Props} props
+ * @returns {Base32}
+ */
+export function makeBase32(props = BASE32_DEFAULT_PROPS) {
+    const alphabet = props.alphabet ?? BASE32_DEFAULT_ALPHABET
+    const padChar = "padChar" in props ? props.padChar : ""
+    const strict = "strict" in props ? (props.strict ?? false) : false
+
+    if (alphabet.length != 32) {
+        throw new Error(
+            `expected base32 alphabet with 32 characters, got ${alphabet.length} characters`
+        )
+    }
+
+    if (new Set(alphabet.split("")).size != 32) {
+        throw new Error(
+            "invalid base32 alphabet, doesn't consist 32 unique characters"
+        )
+    }
+
+    if ("padChar" in props && padChar.length != 1) {
+        throw new Error("expected single base32 padChar")
+    }
+
+    if ("padChar" in props && alphabet.indexOf(padChar) != -1) {
+        throw new Error("base32 padChar can't be part of alphabet")
+    }
+
+    return new Base32Impl(alphabet, padChar, strict)
+}
+
+/**
+ * @implements {Base32}
+ */
+class Base32Impl {
     /**
      * @readonly
      * @type {string}
@@ -48,64 +94,14 @@ export class Base32 {
     strict
 
     /**
-     * @param {Base32Props} props
+     * @param {string} alphabet
+     * @param {string} padChar
+     * @param {boolean} strict
      */
-    constructor(props = Base32.DEFAULT_PROPS) {
-        const alphabet = props.alphabet ?? Base32.DEFAULT_ALPHABET
-        const padChar = "padChar" in props ? props.padChar : ""
-        const strict = "strict" in props ? (props.strict ?? false) : false
-
-        if (alphabet.length != 32) {
-            throw new Error(
-                `expected base32 alphabet with 32 characters, got ${alphabet.length} characters`
-            )
-        }
-
-        if (new Set(alphabet.split("")).size != 32) {
-            throw new Error(
-                "invalid base32 alphabet, doesn't consist 32 unique characters"
-            )
-        }
-
-        if ("padChar" in props && padChar.length != 1) {
-            throw new Error("expected single base32 padChar")
-        }
-
-        if ("padChar" in props && alphabet.indexOf(padChar) != -1) {
-            throw new Error("base32 padChar can't be part of alphabet")
-        }
-
+    constructor(alphabet, padChar, strict) {
         this.alphabet = alphabet
         this.padChar = padChar
         this.strict = strict
-    }
-
-    /**
-     * Rfc 4648
-     * @type {string}
-     */
-    static get DEFAULT_ALPHABET() {
-        return "abcdefghijklmnopqrstuvwxyz234567"
-    }
-
-    /**
-     * Rfc 4648
-     * @type {string}
-     */
-    static get DEFAULT_PAD_CHAR() {
-        return "="
-    }
-
-    /**
-     * Rfc 4648
-     * @type {Base32Props}
-     */
-    static get DEFAULT_PROPS() {
-        return {
-            alphabet: Base32.DEFAULT_ALPHABET,
-            padChar: Base32.DEFAULT_PAD_CHAR,
-            strict: false
-        }
     }
 
     /**
@@ -170,7 +166,7 @@ export class Base32 {
     encodeRaw(bytes) {
         const result = []
 
-        const reader = new BitReader(bytes, false)
+        const reader = makeBitReader({ bytes, truncate: false })
 
         while (!reader.eof()) {
             result.push(reader.readBits(5))
@@ -281,7 +277,7 @@ export class Base32 {
      * @returns {number[]}
      */
     decode(encoded) {
-        const writer = new BitWriter()
+        const writer = makeBitWriter()
 
         const raw = this.decodeRaw(encoded)
 
@@ -310,9 +306,9 @@ export class Base32 {
 }
 
 /**
- * Not exported. Use `new Base32()` instead
+ * Not exported. Use `makeBase32()` directly instead
  */
-const DEFAULT_BASE32_CODEC = new Base32()
+const DEFAULT_BASE32_CODEC = makeBase32()
 
 /**
  * Checks if all the characters in `s` are in the given base32 alphabet.

@@ -1,6 +1,5 @@
 import { strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
 import { decodeBase58, encodeBase58, isValidBase58 } from "./base58.js"
 
 const VALID_BASE58 = "233QC4"

@@ -1,8 +1,13 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
-import { compareBytes, dummyBytes, padBytes, prepadBytes } from "./ops.js"
 import { hexToBytes } from "./base16.js"
+import {
+    compareBytes,
+    dummyBytes,
+    equalsBytes,
+    padBytes,
+    prepadBytes
+} from "./ops.js"
 
 describe(padBytes.name, () => {
     describe("padding with n=0", () => {
@@ -57,6 +62,16 @@ describe(prepadBytes.name, () => {
 
         it("returns [0, 1] for [1]", () => {
             deepEqual(prepadBytes([1], 2), [0, 1])
+        })
+
+        it("returns [1, 1] for [1, 1]", () => {
+            deepEqual(prepadBytes([1, 1], 2), [1, 1])
+        })
+
+        it("fails for [1, 1, 1]", () => {
+            throws(() => {
+                prepadBytes([1, 1, 1], 2)
+            })
         })
     })
 
@@ -128,5 +143,38 @@ describe(compareBytes.name, () => {
 describe(dummyBytes.name, () => {
     it("returns all 0 with default 2nd arg", () => {
         deepEqual(dummyBytes(28), new Array(28).fill(0))
+    })
+})
+
+describe(equalsBytes.name, () => {
+    it("returns false for [] and [1]", () => {
+        strictEqual(equalsBytes([], [1]), false)
+    })
+
+    it("returns true for [1] and [1]", () => {
+        strictEqual(equalsBytes([1], [1]), true)
+    })
+
+    it("returns true of Uint8Array([1]) and Uint8Array([1])", () => {
+        strictEqual(equalsBytes(new Uint8Array([1]), new Uint8Array([1])), true)
+    })
+
+    it("returns true for Uint8Array([1]) and [1]", () => {
+        strictEqual(equalsBytes(new Uint8Array([1]), [1]), true)
+    })
+
+    it("returns true for [1] and Uint8Array([1])", () => {
+        strictEqual(equalsBytes([1], new Uint8Array([1])), true)
+    })
+
+    it("returns false for [0] and Uint8Array([1])", () => {
+        strictEqual(equalsBytes([0], new Uint8Array([1])), false)
+    })
+
+    it("returns false for Uint8Array([0]) and Uint8Array([1])", () => {
+        strictEqual(
+            equalsBytes(new Uint8Array([0]), new Uint8Array([1])),
+            false
+        )
     })
 })

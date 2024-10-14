@@ -1,15 +1,23 @@
 /**
  * @typedef {{
  *   finalize(): string
- *   write(part: string): StringWriterI
- *   writeLine(line: string): StringWriterI
- * }} StringWriterI
+ *   write(part: string): StringWriter
+ *   writeLine(line: string): StringWriter
+ * }} StringWriter
  */
 
 /**
- * @implements {StringWriterI}
+ * @param {{}} _args
+ * @returns {StringWriter}
  */
-export class StringWriter {
+export function makeStringWriter(_args = {}) {
+    return new StringWriterImpl()
+}
+
+/**
+ * @implements {StringWriter}
+ */
+class StringWriterImpl {
     /**
      * @private
      * @readonly

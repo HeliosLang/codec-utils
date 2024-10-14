@@ -1,6 +1,5 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
 import { decodeUtf8, encodeUtf8, isValidUtf8 } from "./utf8.js"
 
 describe(isValidUtf8.name, () => {

@@ -1,6 +1,5 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-
 import { bytesToHex, hexToBytes, isValidHex } from "./base16.js"
 
 describe(isValidHex.name, () => {
@@ -46,6 +45,10 @@ describe(hexToBytes.name, () => {
 
     it('returns [0, 255, 52] for "00ff34"', () => {
         deepEqual(hexToBytes("00ff34"), [0, 255, 52])
+    })
+
+    it('returns [0, 255, 52] for "#00ff34"', () => {
+        deepEqual(hexToBytes("#00ff34"), [0, 255, 52])
     })
 
     it('returns [0, 255, 52] for "00FF34" (case insensitive)', () => {

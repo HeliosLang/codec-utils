@@ -1,22 +1,30 @@
 import { padBits } from "./ops.js"
 
 /**
+ * BitWriter turns a string of '0's and '1's into a list of bytes.
+ * Finalization pads the bits using '0*1' if not yet aligned with the byte boundary.
  * @typedef {{
  *   length: number
  *   finalize(force?: boolean): number[]
  *   padToByteBoundary(force?: boolean): void
  *   pop(n: number): string
- *   writeBits(bitChars: string): BitWriterI
- *   writeByte(byte: number): BitWriterI
- * }} BitWriterI
+ *   writeBits(bitChars: string): BitWriter
+ *   writeByte(byte: number): BitWriter
+ * }} BitWriter
  */
 
 /**
- * BitWriter turns a string of '0's and '1's into a list of bytes.
- * Finalization pads the bits using '0*1' if not yet aligned with the byte boundary.
- * @implements {BitWriterI}
+ * @param {{}} _args
+ * @returns {BitWriter}
  */
-export class BitWriter {
+export function makeBitWriter(_args = {}) {
+    return new BitWriterImpl()
+}
+
+/**
+ * @implements {BitWriter}
+ */
+class BitWriterImpl {
     /**
      * Concatenated and padded upon finalization
      * @private

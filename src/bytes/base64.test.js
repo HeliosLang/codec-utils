@@ -1,45 +1,49 @@
 import { deepEqual, strictEqual, throws } from "node:assert"
 import { describe, it } from "node:test"
-import { hexToBytes } from "./base16.js"
-import { Base64, decodeBase64, encodeBase64, isValidBase64 } from "./base64.js"
 import { decodeUtf8, encodeUtf8 } from "../string/index.js"
+import { hexToBytes } from "./base16.js"
+import {
+    decodeBase64,
+    encodeBase64,
+    isValidBase64,
+    makeBase64,
+    BASE64_DEFAULT_ALPHABET,
+    BASE64_DEFAULT_PROPS
+} from "./base64.js"
 
-describe(`${Base64.name} constructor`, () => {
+describe(`makeBase64()`, () => {
     it("fails for non-64 char alphabet", () => {
-        throws(() => new Base64({ alphabet: "abcdefg" }))
+        throws(() => makeBase64({ alphabet: "abcdefg" }))
     })
 
     it("fails for non-unique 64 char alphabet", () => {
-        throws(
-            () =>
-                new Base64({
-                    alphabet:
-                        "AACDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
-                })
+        throws(() =>
+            makeBase64({
+                alphabet:
+                    "AACDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+            })
         )
     })
 
     it("fails for non-single padding char (0 chars)", () => {
-        throws(
-            () => new Base64({ alphabet: Base64.DEFAULT_ALPHABET, padChar: "" })
+        throws(() =>
+            makeBase64({ alphabet: BASE64_DEFAULT_ALPHABET, padChar: "" })
         )
     })
 
     it("fails for non-single padding char (more than 1 char)", () => {
-        throws(
-            () =>
-                new Base64({ alphabet: Base64.DEFAULT_ALPHABET, padChar: "==" })
+        throws(() =>
+            makeBase64({ alphabet: BASE64_DEFAULT_ALPHABET, padChar: "==" })
         )
     })
 
     it("fails if padding char is part of alphabet", () => {
-        throws(
-            () =>
-                new Base64({
-                    alphabet:
-                        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+=",
-                    padChar: "="
-                })
+        throws(() =>
+            makeBase64({
+                alphabet:
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+=",
+                padChar: "="
+            })
         )
     })
 })
@@ -100,13 +104,12 @@ describe(encodeBase64.name, () => {
 })
 
 describe(decodeBase64.name, () => {
-    const paddingCodec = new Base64({
-        alphabet: Base64.DEFAULT_ALPHABET,
-        padChar: Base64.DEFAULT_PAD_CHAR,
+    const paddingCodec = makeBase64({
+        ...BASE64_DEFAULT_PROPS,
         strict: true
     })
 
-    const paddingLessCodec = new Base64({ alphabet: Base64.DEFAULT_ALPHABET })
+    const paddingLessCodec = makeBase64({ alphabet: BASE64_DEFAULT_ALPHABET })
 
     it("returns #14fb9c03 for FPucAw==", () => {
         deepEqual(decodeBase64("FPucAw=="), hexToBytes("14fb9c03"))

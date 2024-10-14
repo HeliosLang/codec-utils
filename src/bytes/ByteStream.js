@@ -1,14 +1,14 @@
-import { hexToBytes } from "./base16.js"
+import { toUint8Array } from "./ByteArrayLike.js"
 
 /**
- * @typedef {string | number[] | {value: number[]} | {bytes: number[]} | Uint8Array} ByteArrayLike
+ * @typedef {import("./ByteArrayLike.js").ByteArrayLike} ByteArrayLike
  */
 
 /**
  * @typedef {{
  *   bytes: Uint8Array
  *   pos: number
- *   copy(): ByteStreamI
+ *   copy(): ByteStream
  *   isAtEnd(): boolean
  *   peekOne(): number
  *   peekMany(n: number): number[]
@@ -16,13 +16,39 @@ import { hexToBytes } from "./base16.js"
  *   shiftOne(): number
  *   shiftMany(n: number): number[]
  *   shiftRemaining(): number[]
- * }} ByteStreamI
+ * }} ByteStream
  */
 
 /**
- * @implements {ByteStreamI}
+ * @param {{
+ *   bytes: ByteStream
+ * } | {
+ *   bytes: ByteArrayLike
+ *   pos?: number
+ * }} args
+ * @returns {ByteStream}
  */
-export class ByteStream {
+export function makeByteStream(args) {
+    const bytes = args.bytes
+
+    if (bytes instanceof ByteStreamImpl) {
+        return bytes
+    } else if (typeof bytes == "string" || Array.isArray(bytes)) {
+        return new ByteStreamImpl(toUint8Array(bytes), 0)
+    } else if ("pos" in bytes && "bytes" in bytes) {
+        return new ByteStreamImpl(toUint8Array(bytes.bytes), bytes.pos)
+    } else {
+        return new ByteStreamImpl(
+            toUint8Array(bytes),
+            "pos" in args ? args.pos : 0
+        )
+    }
+}
+
+/**
+ * @implements {ByteStream}
+ */
+class ByteStreamImpl {
     /**
      * @private
      * @type {Uint8Array}
@@ -37,39 +63,12 @@ export class ByteStream {
 
     /**
      * Not intended for external use
-     * @param {ByteArrayLike} bytes
+     * @param {Uint8Array} bytes
      * @param {number} pos
      */
     constructor(bytes, pos = 0) {
-        if (bytes instanceof Uint8Array) {
-            this._bytes = bytes
-        } else if (typeof bytes == "string") {
-            this._bytes = Uint8Array.from(hexToBytes(bytes))
-        } else if (typeof bytes == "object" && "value" in bytes) {
-            this._bytes = Uint8Array.from(bytes.value)
-        } else if (typeof bytes == "object" && "bytes" in bytes) {
-            this._bytes = Uint8Array.from(bytes.bytes)
-        } else {
-            this._bytes = Uint8Array.from(bytes)
-        }
-
+        this._bytes = bytes
         this._pos = pos
-    }
-
-    /**
-     * @param {ByteArrayLike | ByteStreamI} bytes
-     * @returns {ByteStream}
-     */
-    static from(bytes) {
-        if (bytes instanceof ByteStream) {
-            return bytes
-        } else if (typeof bytes == "string" || Array.isArray(bytes)) {
-            return new ByteStream(bytes)
-        } else if ("pos" in bytes && "bytes" in bytes) {
-            return new ByteStream(bytes.bytes, bytes.pos)
-        } else {
-            return new ByteStream(bytes)
-        }
     }
 
     /**
@@ -91,7 +90,7 @@ export class ByteStream {
      * @returns {ByteStream}
      */
     copy() {
-        return new ByteStream(this._bytes, this._pos)
+        return new ByteStreamImpl(this._bytes, this._pos)
     }
 
     /**

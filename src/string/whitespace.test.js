@@ -1,6 +1,6 @@
+import { strictEqual } from "node:assert"
 import { describe, it } from "node:test"
 import { removeWhitespace, replaceTabs } from "./whitespace.js"
-import { strictEqual } from "node:assert"
 
 describe(removeWhitespace.name, () => {
     it("whitespace removed correctly from beginning and end", () => {
