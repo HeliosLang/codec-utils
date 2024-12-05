@@ -20,15 +20,29 @@ import { toUint8Array } from "./ByteArrayLike.js"
  */
 
 /**
- * @param {{
- *   bytes: ByteStream | ByteArrayLike
- * } | {
+ * @param {ByteStream |
+ *   ByteArrayLike | {
+ *      bytes: ByteStream | ByteArrayLike
+ *   } | {
  *   bytes: ByteArrayLike
  *   pos?: number
  * }} args
  * @returns {ByteStream}
  */
 export function makeByteStream(args) {
+    if (args instanceof ByteStreamImpl) {
+        // most common case
+        return args
+    } else if (typeof args == "string" || Array.isArray(args)) {
+        return new ByteStreamImpl(toUint8Array(args), 0)
+    } else if ("pos" in args && "bytes" in args) {
+        return new ByteStreamImpl(toUint8Array(args.bytes), args.pos)
+    } else if ("value" in args) {
+        return new ByteStreamImpl(toUint8Array(args))
+    } else if (args instanceof Uint8Array) {
+        return new ByteStreamImpl(args)
+    }
+
     const bytes = args.bytes
 
     if (bytes instanceof ByteStreamImpl) {

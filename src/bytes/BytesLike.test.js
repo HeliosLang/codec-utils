@@ -28,6 +28,10 @@ describe("toBytes()", () => {
         deepEqual(toBytes(makeByteStream({ bytes: [255] })), [255])
     })
 
+    it("converts ByteStream([255]) into [255]", () => {
+        deepEqual(toBytes(makeByteStream([255])), [255])
+    })
+
     it("fails for wrong type", () => {
         throws(() => {
             toBytes(/** @type {any} */ ({}))
