@@ -1,9 +1,5 @@
 /**
- * @typedef {{
- *   finalize(): string
- *   write(part: string): StringWriter
- *   writeLine(line: string): StringWriter
- * }} StringWriter
+ * @import { StringWriter } from "../index.js"
  */
 
 /**

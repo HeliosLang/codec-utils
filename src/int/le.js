@@ -2,9 +2,9 @@ import { padBytes } from "../bytes/ops.js"
 import { encodeIntBE, decodeIntBE } from "./be.js"
 
 /**
- * @typedef {import("./IntLike.js").IntLike} IntLike
- *
+ * @import { IntLike } from "../index.js"
  */
+
 /**
  * Little Endian bytes to bigint (doesnt need to be 32 bytes long)
  * @param {number[] | Uint8Array} bytes

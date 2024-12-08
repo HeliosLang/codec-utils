@@ -1,5 +1,5 @@
 /**
- * @typedef {number | bigint} IntLike
+ * @import { IntLike } from "../index.js"
  */
 
 /**

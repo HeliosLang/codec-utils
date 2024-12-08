@@ -1,28 +1,7 @@
 import { makeBitReader, makeBitWriter, padBits } from "../bits/index.js"
 
 /**
- * @typedef {{
- *   alphabet: string
- *   padChar: string
- *   strict: boolean
- *   decode(encoded: string): number[]
- *   decodeRaw(encoded: string): number[]
- *   encode(bytes: number[]): string
- *   encodeRaw(bytes: number[]): number[]
- *   isValid(encoded: string): boolean
- * }} Base64
- */
-
-/**
- * In the first case the encoding operates without padding (and encoded strings with padding are invalid)
- * In the second case the padding character is specified. Strict defaults to false in which case unpadded encoded strings are also valid
- * @typedef {{
- *   alphabet?: string
- * } | {
- *   alphabet?: string
- *   padChar: string
- *   strict?: boolean
- * }} Base64Props
+ * @import { Base64, Base64Props } from "../index.js"
  */
 
 /**
@@ -31,6 +10,12 @@ import { makeBitReader, makeBitWriter, padBits } from "../bits/index.js"
  */
 export const BASE64_DEFAULT_ALPHABET =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+
+/**
+ * @type {string}
+ */
+export const BASE64_URL_SAFE_ALPHABET =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 
 /**
  * Rfc 4648

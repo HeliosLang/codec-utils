@@ -1,18 +1,5 @@
 /**
- * UInt64 number (represented by 2 UInt32 numbers)
- * If performance is very important: create an initial prototype of your algorithm using this class, and then inline all the operations (eg. how it was done for sha2_512)
- * @typedef {{
- *   high: number
- *   low: number
- *   add(other: UInt64): UInt64
- *   and(other: UInt64): UInt64
- *   xor(other: UInt64): UInt64
- *   eq(other: UInt64): boolean
- *   not(): UInt64
- *   rotr(n: number): UInt64
- *   shiftr(n: number): UInt64
- *   toBytes(littleEndian?: boolean): number[]
- * }} UInt64
+ * @import { UInt64 } from "../index.js"
  */
 
 /**

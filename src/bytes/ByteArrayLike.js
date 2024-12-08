@@ -1,7 +1,7 @@
 import { hexToBytes } from "./base16.js"
 
 /**
- * @typedef {string | number[] | {value: number[]} | {bytes: number[]} | Uint8Array} ByteArrayLike
+ * @import { ByteArrayLike } from "../index.js"
  */
 
 /**

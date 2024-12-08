@@ -1,13 +1,7 @@
 import { maskBits } from "./ops.js"
 
 /**
- * Read non-byte aligned numbers
- * @typedef {{
- *   eof(): boolean
- *   moveToByteBoundary(force?: boolean): void
- *   readBits(n: number): number
- *   readByte(): number
- * }} BitReader
+ * @import { BitReader } from "../index.js"
  */
 
 /**

@@ -3,7 +3,7 @@ import { describe, it } from "node:test"
 import { makeByteStream } from "./ByteStream.js"
 
 /**
- * @typedef {import("./BytesLike.js").BytesLike} BytesLike
+ * @import { BytesLike } from "../index.js"
  */
 
 describe(`ByteStream`, () => {

@@ -1,16 +1,7 @@
 import { padBits } from "./ops.js"
 
 /**
- * BitWriter turns a string of '0's and '1's into a list of bytes.
- * Finalization pads the bits using '0*1' if not yet aligned with the byte boundary.
- * @typedef {{
- *   length: number
- *   finalize(force?: boolean): number[]
- *   padToByteBoundary(force?: boolean): void
- *   pop(n: number): string
- *   writeBits(bitChars: string): BitWriter
- *   writeByte(byte: number): BitWriter
- * }} BitWriter
+ * @import { BitWriter } from "../index.js"
  */
 
 /**

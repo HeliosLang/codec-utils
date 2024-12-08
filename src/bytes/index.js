@@ -15,7 +15,8 @@ export {
     makeBase64,
     BASE64_DEFAULT_ALPHABET,
     BASE64_DEFAULT_PAD_CHAR,
-    BASE64_DEFAULT_PROPS
+    BASE64_DEFAULT_PROPS,
+    BASE64_URL_SAFE_ALPHABET
 } from "./base64.js"
 export { toBytes } from "./BytesLike.js"
 export { makeByteStream } from "./ByteStream.js"
@@ -26,10 +27,3 @@ export {
     padBytes,
     prepadBytes
 } from "./ops.js"
-
-/**
- * @typedef {import("./base32.js").Base32} Base32
- * @typedef {import("./base64.js").Base64} Base64
- * @typedef {import("./BytesLike.js").BytesLike} BytesLike
- * @typedef {import("./ByteStream.js").ByteStream} ByteStream
- */

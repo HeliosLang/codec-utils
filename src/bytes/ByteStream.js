@@ -1,32 +1,14 @@
 import { toUint8Array } from "./ByteArrayLike.js"
 
 /**
- * @typedef {import("./ByteArrayLike.js").ByteArrayLike} ByteArrayLike
- */
-
-/**
- * @typedef {{
- *   bytes: Uint8Array
- *   pos: number
- *   copy(): ByteStream
- *   isAtEnd(): boolean
- *   peekOne(): number
- *   peekMany(n: number): number[]
- *   peekRemaining(): number[]
- *   shiftOne(): number
- *   shiftMany(n: number): number[]
- *   shiftRemaining(): number[]
- * }} ByteStream
+ * @import { ByteArrayLike, ByteStream } from "../index.js"
  */
 
 /**
  * @param {ByteStream |
  *   ByteArrayLike | {
  *      bytes: ByteStream | ByteArrayLike
- *   } | {
- *   bytes: ByteArrayLike
- *   pos?: number
- * }} args
+ *   }} args
  * @returns {ByteStream}
  */
 export function makeByteStream(args) {
@@ -36,7 +18,7 @@ export function makeByteStream(args) {
     } else if (typeof args == "string" || Array.isArray(args)) {
         return new ByteStreamImpl(toUint8Array(args), 0)
     } else if ("pos" in args && "bytes" in args) {
-        return new ByteStreamImpl(toUint8Array(args.bytes), args.pos)
+        return args
     } else if ("value" in args) {
         return new ByteStreamImpl(toUint8Array(args))
     } else if (args instanceof Uint8Array) {
@@ -50,12 +32,9 @@ export function makeByteStream(args) {
     } else if (typeof bytes == "string" || Array.isArray(bytes)) {
         return new ByteStreamImpl(toUint8Array(bytes), 0)
     } else if ("pos" in bytes && "bytes" in bytes) {
-        return new ByteStreamImpl(toUint8Array(bytes.bytes), bytes.pos)
+        return bytes
     } else {
-        return new ByteStreamImpl(
-            toUint8Array(bytes),
-            "pos" in args ? args.pos : 0
-        )
+        return new ByteStreamImpl(toUint8Array(bytes), 0)
     }
 }
 

@@ -1,28 +1,7 @@
 import { makeBitReader, makeBitWriter, padBits } from "../bits/index.js"
 
 /**
- * @typedef {{
- *   alphabet: string
- *   padChar: string
- *   strict: boolean
- *   decode(encoded: string): number[]
- *   decodeRaw(encoded: string): number[]
- *   encode(bytes: number[]): string
- *   encodeRaw(bytes: number[]): number[]
- *   isValid(encoded: string): boolean
- * }} Base32
- */
-
-/**
- * In the first case the encoding operates without padding (and encoded strings with padding are invalid)
- * In the second case the padding character is specified. Strict defaults to false in which case unpadded encoded strings are also valid
- * @typedef {{
- *   alphabet?: string
- * } | {
- *   alphabet?: string
- *   padChar: string
- *   strict?: boolean
- * }} Base32Props
+ * @import { Base32, Base32Props } from "../index.js"
  */
 
 export const BASE32_DEFAULT_ALPHABET = "abcdefghijklmnopqrstuvwxyz234567"
@@ -105,61 +84,6 @@ class Base32Impl {
     }
 
     /**
-     * Checks if all the characters in `s` are in the given base32 alphabet.
-     * Checks lengths if their pad characters at the end
-     * @param {string} encoded
-     * @returns {boolean}
-     */
-    isValid(encoded) {
-        let n = encoded.length
-
-        if (
-            this.padChar.length == 1 &&
-            (this.strict || encoded.endsWith(this.padChar))
-        ) {
-            if (encoded.length % 8 != 0) {
-                return false
-            }
-
-            const iPad = encoded.indexOf(this.padChar)
-
-            for (let i = iPad + 1; i < n; i++) {
-                if (encoded.at(i) != this.padChar) {
-                    return false
-                }
-            }
-
-            const nPad = n - iPad
-
-            if (nPad != 6 && nPad != 4 && nPad != 3 && nPad != 1) {
-                return false
-            }
-
-            encoded = encoded.slice(0, iPad)
-
-            n = iPad
-        }
-
-        // the last char can't be any possible number
-
-        return encoded.split("").every((c, i) => {
-            const code = this.alphabet.indexOf(c.toLowerCase())
-
-            if (code < 0) {
-                return false
-            }
-
-            if (i == n - 1) {
-                const nBitsExtra = n * 5 - Math.floor((n * 5) / 8) * 8
-
-                return (((1 << nBitsExtra) - 1) & code) == 0
-            } else {
-                return true
-            }
-        })
-    }
-
-    /**
      * @param {number[]} bytes
      * @returns {number[]} list of numbers between 0 and 32
      */
@@ -173,44 +97,6 @@ class Base32Impl {
         }
 
         return result
-    }
-
-    /**
-     * Trims the padding, asserting it is correctly formed
-     * @private
-     * @param {string} encoded
-     * @returns {string}
-     */
-    trimPadding(encoded) {
-        if (this.padChar.length == 1) {
-            let n = encoded.length
-
-            while (n >= 0 && encoded.at(n - 1) == this.padChar) {
-                n -= 1
-            }
-
-            // length alignment is only checked if there are some padding characters at the end
-            if (
-                (this.strict || n < encoded.length) &&
-                encoded.length % 8 != 0
-            ) {
-                throw new Error("invalid length (expected multiple of 8)")
-            }
-
-            const nPad = encoded.length - n
-
-            if (nPad != 0) {
-                if (nPad != 6 && nPad != 4 && nPad != 3 && nPad != 1) {
-                    throw new Error(
-                        "invalid number of base32 padding characters"
-                    )
-                }
-            }
-
-            return encoded.slice(0, n)
-        } else {
-            return encoded
-        }
     }
 
     /**
@@ -302,6 +188,99 @@ class Base32Impl {
         const result = writer.finalize(false)
 
         return result
+    }
+
+    /**
+     * Checks if all the characters in `encoded` are in the given base32 alphabet.
+     * Checks lengths if their pad characters at the end
+     * @param {string} encoded
+     * @returns {boolean}
+     */
+    isValid(encoded) {
+        let n = encoded.length
+
+        if (
+            this.padChar.length == 1 &&
+            (this.strict || encoded.endsWith(this.padChar))
+        ) {
+            if (encoded.length % 8 != 0) {
+                return false
+            }
+
+            const iPad = encoded.indexOf(this.padChar)
+
+            for (let i = iPad + 1; i < n; i++) {
+                if (encoded.at(i) != this.padChar) {
+                    return false
+                }
+            }
+
+            const nPad = n - iPad
+
+            if (nPad != 6 && nPad != 4 && nPad != 3 && nPad != 1) {
+                return false
+            }
+
+            encoded = encoded.slice(0, iPad)
+
+            n = iPad
+        }
+
+        // the last char can't be any possible number
+
+        return encoded.split("").every((c, i) => {
+            const code = this.alphabet.indexOf(c.toLowerCase())
+
+            if (code < 0) {
+                return false
+            }
+
+            if (i == n - 1) {
+                const nBitsExtra = n * 5 - Math.floor((n * 5) / 8) * 8
+
+                return (((1 << nBitsExtra) - 1) & code) == 0
+            } else {
+                return true
+            }
+        })
+    }
+
+    /**
+     * Trims the padding, asserting it is correctly formed
+     * @private
+     * @param {string} encoded
+     * @returns {string}
+     */
+    trimPadding(encoded) {
+        if (this.padChar.length == 1) {
+            let n = encoded.length
+
+            while (n >= 0 && encoded.at(n - 1) == this.padChar) {
+                n -= 1
+            }
+
+            // length alignment is only checked if there are some padding characters at the end
+            if (
+                (this.strict || n < encoded.length) &&
+                encoded.length % 8 != 0
+            ) {
+                throw new Error("invalid length (expected multiple of 8)")
+            }
+
+            const nPad = encoded.length - n
+
+            if (nPad != 0) {
+                if (nPad != 6 && nPad != 4 && nPad != 3 && nPad != 1) {
+                    throw new Error(
+                        "invalid number of base32 padding characters"
+                    )
+                }
+            }
+
+            return encoded.slice(0, n)
+        } else {
+            return encoded
+        }
     }
 }
 

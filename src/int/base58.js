@@ -1,5 +1,5 @@
 /**
- * @typedef {import("./IntLike.js").IntLike} IntLike
+ * @import { IntLike } from "../index.js"
  */
 
 const BASE58_ALPHABET =

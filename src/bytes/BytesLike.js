@@ -1,12 +1,7 @@
 import { hexToBytes } from "./base16.js"
 
 /**
- * @typedef {import("./ByteStream.js").ByteStream} ByteStream
- * @typedef {import("./ByteArrayLike.js").ByteArrayLike} ByteArrayLike
- */
-
-/**
- * @typedef {ByteArrayLike | ByteStream} BytesLike
+ * @import { BytesLike } from "../index.js"
  */
 
 /**
