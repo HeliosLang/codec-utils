@@ -291,7 +291,7 @@ class Base64Impl {
 /**
  * Not exported. Use `makeBase64()` directly instead
  */
-const DEFAULT_BASE64_CODEC = makeBase64()
+const DEFAULT_BASE64_CODEC = /* @__PURE__ */ makeBase64()
 
 /**
  * Checks if base64 encoding is correct.

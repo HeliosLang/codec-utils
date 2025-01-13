@@ -214,4 +214,4 @@ class UInt64Impl {
 /**
  * @type {UInt64}
  */
-export const UINT64_ZERO = new UInt64Impl(0, 0)
+export const UINT64_ZERO = (() => /* @__PURE__ */ new UInt64Impl(0, 0))()

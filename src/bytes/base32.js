@@ -287,7 +287,7 @@ class Base32Impl {
 /**
  * Not exported. Use `makeBase32()` directly instead
  */
-const DEFAULT_BASE32_CODEC = makeBase32()
+const DEFAULT_BASE32_CODEC = /* @__PURE__ */ makeBase32()
 
 /**
  * Checks if all the characters in `s` are in the given base32 alphabet.
